@@ -1,17 +1,3 @@
-/** Example 010 Shaders
-
-This tutorial shows how to use shaders for D3D8, D3D9, OpenGL, and Cg with the
-engine and how to create new material types with them. It also shows how to
-disable the generation of mipmaps at texture loading, and how to use text scene
-nodes.
-
-This tutorial does not explain how shaders work. I would recommend to read the
-D3D, OpenGL, or Cg documentation, to search a tutorial, or to read a book about
-this.
-
-At first, we need to include all headers and do the stuff we always do, like in
-nearly all other tutorials:
-*/
 #include <irrlicht.h>
 #include <iostream>
 #include "driverChoice.h"
@@ -22,23 +8,6 @@ using namespace irr;
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
-/*
-Because we want to use some interesting shaders in this tutorials, we need to
-set some data for them to make them able to compute nice colors. In this
-example, we'll use a simple vertex shader which will calculate the color of the
-vertex based on the position of the camera.
-For this, the shader needs the following data: The inverted world matrix for
-transforming the normal, the clip matrix for transforming the position, the
-camera position and the world position of the object for the calculation of the
-angle of light, and the color of the light. To be able to tell the shader all
-this data every frame, we have to derive a class from the
-IShaderConstantSetCallBack interface and override its only method, namely
-OnSetConstants(). This method will be called every time the material is set.
-The method setVertexShaderConstant() of the IMaterialRendererServices interface
-is used to set the data the shader needs. If the user chose to use a High Level
-shader language like HLSL instead of Assembler in this example, you have to set
-the variable name as parameter instead of the register index.
-*/
 
 IrrlichtDevice* device = 0;
 bool UseHighLevelShaders = false;
@@ -124,15 +93,14 @@ in this example, if he selected a driver which is capable of doing so.
 int main()
 {
 	// ask user for driver
-	video::E_DRIVER_TYPE driverType = video::EDT_OPENGL;//driverChoiceConsole();
+	video::E_DRIVER_TYPE driverType = driverChoiceConsole();
 	if (driverType == video::EDT_COUNT)
 		return 1;
 
 	UseHighLevelShaders = true;
-	UseCgShaders = true;
 
 	// create device
-	device = createDevice(driverType, core::dimension2d<u32>(640, 480));
+	device = createDevice(driverType, core::dimension2d<u32>(1024, 768));
 
 	if (device == 0)
 		return 1; // could not create selected driver.
@@ -141,12 +109,6 @@ int main()
 	scene::ISceneManager* smgr = device->getSceneManager();
 	gui::IGUIEnvironment* gui = device->getGUIEnvironment();
 
-	// Make sure we don't try Cg without support for it
-	if (UseCgShaders && !driver->queryFeature(video::EVDF_CG))
-	{
-		printf("Warning: No Cg support, disabling.\n");
-		UseCgShaders = false;
-	}
 
 	io::path vsFileName; // filename for the vertex shader
 	io::path psFileName; // filename for the pixel shader
@@ -210,12 +172,6 @@ int main()
 		vsFileName = "";
 	}
 
-	/*
-	And last, we add a skybox and a user controlled camera to the scene.
-	For the skybox textures, we disable mipmap generation, because we don't
-	need mipmaps on it.
-	*/
-
 	// add a nice skybox
 
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
@@ -237,13 +193,15 @@ int main()
 	cam->setTarget(core::vector3df(1, 0, 0));
 	//device->getCursorControl()->setVisible(false);
 
-	/*
-	Now draw everything. That's all.
-	*/
-
 	int lastFPS = -1;
+	u32 now, then;
+	//then = device->getTimer()->getTime();
 
 	while (device->run())
+		//now = device->getTimer()->getTime();
+		then = now;
+		//f32 timeElapsed = (now - then) / 1000.f;
+
 		if (device->isWindowActive())
 		{
 			driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
@@ -252,7 +210,6 @@ int main()
 
 			int fps = driver->getFPS();
 
-			gui->addStaticText(L"fps", core::rect<s32>(50, 50, 200, 200));
 			if (lastFPS != fps)
 			{
 				core::stringw str = L"Irrlicht Engine - Vertex and pixel shader example [";
