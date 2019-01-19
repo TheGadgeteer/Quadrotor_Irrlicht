@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClInclude Include="MyEventReceiver.h" />
     <ClInclude Include="Quadcopter.h" />
+    <ClInclude Include="ShaderSetup.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
