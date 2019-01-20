@@ -35,5 +35,8 @@
     <ClInclude Include="ShaderSetup.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PlatformNode.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

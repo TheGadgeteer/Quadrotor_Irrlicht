@@ -3,12 +3,15 @@
 
 using namespace irr;
 
-/*
-Just as we did in example 04.Movement, we'll store the latest state of the
-mouse and the first joystick, updating them as we receive events.
-*/
+
 class MyEventReceiver : public IEventReceiver
 {
+private:
+	IrrlichtDevice* device = NULL;
+	scene::ICameraSceneNode** cameras = NULL;
+	int numCameras = 0;
+	scene::ISceneManager* smgr = NULL;
+
 public:
 	// We'll create a struct to record info on the mouse state
 	struct SMouseState
@@ -17,6 +20,18 @@ public:
 		bool LeftButtonDown;
 		SMouseState() : LeftButtonDown(false) { }
 	} MouseState;
+
+	void UpdateEventReceiver(
+		IrrlichtDevice* device,
+		scene::ISceneManager* smgr,
+		scene::ICameraSceneNode** cameras,
+		int numCameras)
+	{
+		this->device = device;
+		this->smgr = smgr;
+		this->cameras = cameras;
+		this->numCameras = numCameras;
+	}
 
 	// This is the one method that we have to implement
 	virtual bool OnEvent(const SEvent& event)
@@ -28,10 +43,12 @@ public:
 			{
 			case EMIE_LMOUSE_PRESSED_DOWN:
 				MouseState.LeftButtonDown = true;
+				device->maximizeWindow();
 				break;
 
 			case EMIE_LMOUSE_LEFT_UP:
 				MouseState.LeftButtonDown = false;
+				printf("Left Mouse Button Released\n");
 				break;
 
 			case EMIE_MOUSE_MOVED:
@@ -45,8 +62,33 @@ public:
 			}
 		}
 		else if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
-			switch (event.KeyInput.Char) {
-
+			switch (event.KeyInput.Key) {
+			case KEY_END:
+				if (event.KeyInput.PressedDown) {
+					gui::ICursorControl* cursor = device->getCursorControl();
+					cursor->setVisible(!cursor->isVisible());
+				}
+				break;
+			case KEY_ESCAPE: // Swap cameras
+				if (event.KeyInput.PressedDown) {
+					scene::ICameraSceneNode* activeCam = smgr->getActiveCamera();
+					// find active camera
+					int idx = -1;
+					for (int i = 0; i < numCameras; ++i) {
+						if (cameras[i] == activeCam) {
+							idx = i;
+							break;
+						}
+					}
+					if (idx >= 0) {
+						int nextIdx = (idx + 1) % numCameras;
+						cameras[nextIdx]->setPosition(cameras[idx]->getPosition());
+						cameras[nextIdx]->setRotation(cameras[idx]->getRotation());
+						smgr->setActiveCamera(cameras[(idx + 1) % numCameras]);
+					}
+				}
+				break;
+				
 			}
 		}
 
@@ -59,10 +101,4 @@ public:
 	{
 		return MouseState;
 	}
-
-
-	MyEventReceiver()
-	{
-	}
-
 };

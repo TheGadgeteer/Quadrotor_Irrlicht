@@ -158,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyEventReceiver.h" />
+    <ClInclude Include="PlatformNode.h" />
     <ClInclude Include="Quadcopter.h" />
     <ClInclude Include="ShaderSetup.h" />
   </ItemGroup>

@@ -4,5 +4,5 @@
 using namespace irr;
 
 class Quadcopter {
-
+	
 };
