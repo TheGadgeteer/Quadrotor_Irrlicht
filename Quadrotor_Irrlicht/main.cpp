@@ -8,7 +8,7 @@
 
 using namespace irr;
 
-#define _METER * 1
+#define _METER * 100
 
 #ifdef _MSC_VER
 #pragma comment(lib, "Irrlicht.lib")
@@ -35,7 +35,7 @@ int main()
 
 	// create device
 	device = createDevice(driverType, core::dimension2d<u32>(1024, 768), 
-		32, false, false, false, &receiver);
+		32, false, false, true, &receiver);
 
 	if (device == 0)
 		return 1; // could not create selected driver.
@@ -79,9 +79,9 @@ int main()
 	
 
 	// add other objects
-	Quadcopter quadcopter;
+	Quadcopter quadcopter(0.4 _METER, 0.7, 12000, 9.81 _METER, smgr->getRootSceneNode(), smgr, 1001);
 
-	PlatformNode* platform = new PlatformNode(30, 10,
+	PlatformNode* platform = new PlatformNode(10 _METER, 10 _METER,
 		driver->getTexture("../media/wall.bmp"),
 		smgr->getRootSceneNode(), 
 		smgr, 1000);
@@ -90,12 +90,26 @@ int main()
 	u32 now, then;
 	then = device->getTimer()->getTime();
 
+	float speed []= { 0.01f, 0.01f, 0.01f, 0.01f };
+	quadcopter.setMotorSpeed(speed);
 	while (device->run())
 		if (device->isWindowActive())
 		{
 			now = device->getTimer()->getTime();
-			f64 timeElapsed = (now - then) / 1000.;
+			f64 elapsedTime = (now - then) / 1000.;
 			then = now;
+
+			quadcopter.update(elapsedTime);
+
+			core::vector3df pos = quadcopter.getPosition();
+			pos.X += 2 _METER;
+			pos.Y += 2 _METER;
+			pos.Z += 1.5 _METER;
+			if (smgr->getActiveCamera() == cameras[0]) {
+				cameras[0]->setPosition(pos);
+				cameras[0]->setTarget(quadcopter.getPosition());
+
+			}
 
 			driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
 			smgr->drawAll();

@@ -43,7 +43,6 @@ public:
 			{
 			case EMIE_LMOUSE_PRESSED_DOWN:
 				MouseState.LeftButtonDown = true;
-				device->maximizeWindow();
 				break;
 
 			case EMIE_LMOUSE_LEFT_UP:
@@ -80,12 +79,8 @@ public:
 							break;
 						}
 					}
-					if (idx >= 0) {
-						int nextIdx = (idx + 1) % numCameras;
-						cameras[nextIdx]->setPosition(cameras[idx]->getPosition());
-						cameras[nextIdx]->setRotation(cameras[idx]->getRotation());
-						smgr->setActiveCamera(cameras[(idx + 1) % numCameras]);
-					}
+					if (idx >= 0)
+						setActiveCamera(cameras[(idx + 1) % numCameras]);
 				}
 				break;
 				
@@ -95,6 +90,20 @@ public:
 
 
 		return false;
+	}
+
+	void setActiveCamera(scene::ICameraSceneNode* newActive)
+	{
+		if (0 == smgr)
+			return;
+
+		scene::ICameraSceneNode * active = smgr->getActiveCamera();
+		active->setInputReceiverEnabled(false);
+
+		newActive->setInputReceiverEnabled(true);
+		newActive->setPosition(active->getPosition());
+		newActive->setRotation(active->getRotation());
+		smgr->setActiveCamera(newActive);
 	}
 
 	const SMouseState & GetMouseState(void) const
