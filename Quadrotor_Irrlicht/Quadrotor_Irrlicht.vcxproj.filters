@@ -38,5 +38,14 @@
     <ClInclude Include="PlatformNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="PIDController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FuzzyController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadrotorController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

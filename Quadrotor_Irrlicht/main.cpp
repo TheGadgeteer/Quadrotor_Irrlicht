@@ -19,7 +19,7 @@ using namespace irr;
 
 IrrlichtDevice* device = 0;
 bool UseHighLevelShaders = false;
-
+float fpsMax = 200;
 
 
 int main()
@@ -70,27 +70,24 @@ int main()
 	cameras[0] = smgr->addCameraSceneNode();
 	cameras[1] = smgr->addCameraSceneNodeFPS();
 
-	smgr->getActiveCamera()->setPosition(core::vector3df(10, 0, 0));
-	smgr->getActiveCamera()->setTarget(core::vector3df(0, 0, 0));
-	//device->getCursorControl()->setVisible(false);
-
-
-	receiver.UpdateEventReceiver(device, smgr, cameras, 2);
+	receiver.setCameras(cameras, 2);
 	
 
 	// add other objects
-	Quadcopter quadcopter(0.4 _METER, 0.7, 12000, 9.81 _METER, smgr->getRootSceneNode(), smgr, 1001);
+	Quadcopter quadcopter(0.4 _METER, 0.7, 12000/60.f, 9.81 _METER, smgr->getRootSceneNode(), smgr, 1001);
 
-	PlatformNode* platform = new PlatformNode(10 _METER, 10 _METER,
+	PlatformNode* platform = new PlatformNode(100 _METER, 100 _METER,
 		driver->getTexture("../media/wall.bmp"),
 		smgr->getRootSceneNode(), 
 		smgr, 1000);
 
+	smgr->getActiveCamera()->setPosition(core::vector3df(1 _METER, 1 _METER, 1 _METER));
+	smgr->getActiveCamera()->setTarget(quadcopter.getAbsolutePosition());
+
 	int lastFPS = -1;
 	u32 now, then;
 	then = device->getTimer()->getTime();
-
-	float speed []= { 0.01f, 0.01f, 0.01f, 0.01f };
+	float speed []= { 60/12000.f, 60/12000.f, 60/12000.f, 0.02f };
 	quadcopter.setMotorSpeed(speed);
 	while (device->run())
 		if (device->isWindowActive())
@@ -102,13 +99,17 @@ int main()
 			quadcopter.update(elapsedTime);
 
 			core::vector3df pos = quadcopter.getPosition();
-			pos.X += 2 _METER;
-			pos.Y += 2 _METER;
-			pos.Z += 1.5 _METER;
+			pos.X += 1 _METER;
+			pos.Y += 1 _METER;
+			pos.Z += 0.5 _METER;
 			if (smgr->getActiveCamera() == cameras[0]) {
 				cameras[0]->setPosition(pos);
-				cameras[0]->setTarget(quadcopter.getPosition());
-
+				cameras[0]->setTarget(quadcopter.getAbsolutePosition());
+			}
+			else {
+				core::vector3df camPos = cameras[1]->getPosition();
+				camPos.Y = pos.Y + 0.5 _METER;
+				cameras[1]->setPosition(camPos);
 			}
 
 			driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
@@ -127,6 +128,14 @@ int main()
 
 				device->setWindowCaption(str.c_str());
 				lastFPS = fps;
+			}
+
+			// cap FPS
+			now = device->getTimer()->getTime();
+			float elapsedTimeMs = (now - then);
+			float maxElapsedTimeMs = 1 / fpsMax * 1000.f;
+			if (elapsedTimeMs < maxElapsedTimeMs) {
+				_sleep(maxElapsedTimeMs - elapsedTimeMs);
 			}
 		}
 

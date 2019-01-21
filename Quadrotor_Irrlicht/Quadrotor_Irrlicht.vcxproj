@@ -157,9 +157,12 @@
     <ClCompile Include="Quadcopter.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FuzzyController.h" />
     <ClInclude Include="MyEventReceiver.h" />
+    <ClInclude Include="PIDController.h" />
     <ClInclude Include="PlatformNode.h" />
     <ClInclude Include="Quadcopter.h" />
+    <ClInclude Include="QuadrotorController.h" />
     <ClInclude Include="ShaderSetup.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

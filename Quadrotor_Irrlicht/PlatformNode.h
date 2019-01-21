@@ -32,6 +32,7 @@ public:
 		Material.Wireframe = false;
 		Material.Lighting = false;
 		this->setMaterialTexture(0, texture);
+		Material.BackfaceCulling = false;
 
 		Vertices[0] = video::S3DVertex(-xLength/2, 0, -yLength/2, 1, 0, 0,
 			video::SColor(255, 255, 255, 255), 0, 0);

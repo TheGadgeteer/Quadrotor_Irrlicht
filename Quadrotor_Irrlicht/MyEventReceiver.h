@@ -3,11 +3,11 @@
 
 using namespace irr;
 
+extern IrrlichtDevice* device;
 
 class MyEventReceiver : public IEventReceiver
 {
 private:
-	IrrlichtDevice* device = NULL;
 	scene::ICameraSceneNode** cameras = NULL;
 	int numCameras = 0;
 	scene::ISceneManager* smgr = NULL;
@@ -21,14 +21,10 @@ public:
 		SMouseState() : LeftButtonDown(false) { }
 	} MouseState;
 
-	void UpdateEventReceiver(
-		IrrlichtDevice* device,
-		scene::ISceneManager* smgr,
+	void setCameras(
 		scene::ICameraSceneNode** cameras,
 		int numCameras)
 	{
-		this->device = device;
-		this->smgr = smgr;
 		this->cameras = cameras;
 		this->numCameras = numCameras;
 	}
@@ -36,6 +32,12 @@ public:
 	// This is the one method that we have to implement
 	virtual bool OnEvent(const SEvent& event)
 	{
+		if (this->smgr == NULL) {
+			if (device == NULL)
+				return false;
+			this->smgr = device->getSceneManager();
+		}
+
 		// Remember the mouse state
 		if (event.EventType == irr::EET_MOUSE_INPUT_EVENT)
 		{

@@ -17,10 +17,10 @@ private:
 	core::vector3df speed = core::vector3df(0, 0, 0);
 
 	const float rodSizeFactor = 0.03f;
-	const float rotorTimeConstant = 0.1f;
+	const float rotorTimeConstant = 1.f;
 
 	float size;
-	const float weight, maxRPM, gravity;
+	const float weight, maxRPS, gravity;
 
 public:
 
@@ -35,22 +35,17 @@ public:
 		ISceneNode::OnRegisterSceneNode();
 	}
 
-	// Every element in speed is between 0 and 1
-	void setMotorSpeed(float speed[]) {
-		for (int i = 0; i < 4; ++i) {
-			wantedMotorSpeed[i] = speed[i] * maxRPM;
-		}
-	}
+	// Every element in speed is between -1 and 1
+	void setMotorSpeed(float speed[]);
 
 	virtual void render()
 	{
-		//u16 indices[] = { 0,2,3, 2,1,3, 1,0,3, 2,0,1 };
-		u16 indices[] = { 0,1,2, 3,2,1 };
-		video::IVideoDriver* driver = SceneManager->getVideoDriver();
+		/*video::IVideoDriver* driver = SceneManager->getVideoDriver();
 
 		driver->setMaterial(Material);
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		driver->drawVertexPrimitiveList(&Vertices[0], 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
+		*/
 	}
 
 	void update(f64 elapsedTime);
