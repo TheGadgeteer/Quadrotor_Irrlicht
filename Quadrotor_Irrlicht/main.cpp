@@ -3,7 +3,7 @@
 #include "driverChoice.h"
 #include "ShaderSetup.h"
 #include "MyEventReceiver.h"
-#include "Quadcopter.h"
+#include "Quadrotor.h"
 #include "PlatformNode.h"
 
 using namespace irr;
@@ -54,14 +54,15 @@ int main()
 
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 
-	smgr->addSkyBoxSceneNode(
+	smgr->addSkyDomeSceneNode(driver->getTexture("../media/Sky_horiz_3.jpg"));
+	/*smgr->addSkyBoxSceneNode(
 		driver->getTexture("../media/Yokohama2/posy.jpg"),
 		driver->getTexture("../media/Yokohama2/negy.jpg"),
 		driver->getTexture("../media/Yokohama2/negz.jpg"),
 		driver->getTexture("../media/Yokohama2/posz.jpg"),
 		driver->getTexture("../media/Yokohama2/negx.jpg"),
 		driver->getTexture("../media/Yokohama2/posx.jpg"));
-
+*/
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
 	// add a camera and disable the mouse cursor
@@ -74,21 +75,23 @@ int main()
 	
 
 	// add other objects
-	Quadcopter quadcopter(0.4 _METER, 0.7, 12000/60.f, 9.81 _METER, smgr->getRootSceneNode(), smgr, 1001);
+	Quadrotor quadrotor(0.4 _METER, 0.7, 12000/60.f, 9.81 _METER, smgr->getRootSceneNode(), smgr, 1001);
 
-	PlatformNode* platform = new PlatformNode(100 _METER, 100 _METER,
+	PlatformNode* platform = new PlatformNode(20 _METER, 20 _METER,
 		driver->getTexture("../media/wall.bmp"),
 		smgr->getRootSceneNode(), 
 		smgr, 1000);
 
 	smgr->getActiveCamera()->setPosition(core::vector3df(1 _METER, 1 _METER, 1 _METER));
-	smgr->getActiveCamera()->setTarget(quadcopter.getAbsolutePosition());
+	smgr->getActiveCamera()->setTarget(quadrotor.getAbsolutePosition());
+	bool isCameraHeightFixed = false;
+	receiver.registerSwap('1', &isCameraHeightFixed);
 
 	int lastFPS = -1;
 	u32 now, then;
 	then = device->getTimer()->getTime();
 	float speed []= { 60/12000.f, 60/12000.f, 60/12000.f, 0.02f };
-	quadcopter.setMotorSpeed(speed);
+	quadrotor.setMotorSpeed(speed);
 	while (device->run())
 		if (device->isWindowActive())
 		{
@@ -96,17 +99,17 @@ int main()
 			f64 elapsedTime = (now - then) / 1000.;
 			then = now;
 
-			quadcopter.update(elapsedTime);
+			quadrotor.update(elapsedTime);
 
-			core::vector3df pos = quadcopter.getPosition();
+			core::vector3df pos = quadrotor.getPosition();
 			pos.X += 1 _METER;
 			pos.Y += 1 _METER;
 			pos.Z += 0.5 _METER;
 			if (smgr->getActiveCamera() == cameras[0]) {
 				cameras[0]->setPosition(pos);
-				cameras[0]->setTarget(quadcopter.getAbsolutePosition());
+				cameras[0]->setTarget(quadrotor.getAbsolutePosition());
 			}
-			else {
+			else if (isCameraHeightFixed) {
 				core::vector3df camPos = cameras[1]->getPosition();
 				camPos.Y = pos.Y + 0.5 _METER;
 				cameras[1]->setPosition(camPos);

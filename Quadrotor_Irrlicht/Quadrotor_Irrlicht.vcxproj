@@ -154,14 +154,14 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Quadcopter.cpp" />
+    <ClCompile Include="Quadrotor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FuzzyController.h" />
     <ClInclude Include="MyEventReceiver.h" />
     <ClInclude Include="PIDController.h" />
     <ClInclude Include="PlatformNode.h" />
-    <ClInclude Include="Quadcopter.h" />
+    <ClInclude Include="Quadrotor.h" />
     <ClInclude Include="QuadrotorController.h" />
     <ClInclude Include="ShaderSetup.h" />
   </ItemGroup>

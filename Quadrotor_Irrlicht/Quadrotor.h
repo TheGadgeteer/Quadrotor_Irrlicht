@@ -3,7 +3,7 @@
 
 using namespace irr;
 
-class Quadcopter : public scene::ISceneNode
+class Quadrotor : public scene::ISceneNode
 {
 private:
 	core::aabbox3d<f32> Box;
@@ -24,7 +24,7 @@ private:
 
 public:
 
-	Quadcopter(float size,  float weight,
+	Quadrotor(float size,  float weight,
 		float maxRPM, float gravity, scene::ISceneNode* parent, scene::ISceneManager* smgr, s32 id);
 
 	virtual void OnRegisterSceneNode()

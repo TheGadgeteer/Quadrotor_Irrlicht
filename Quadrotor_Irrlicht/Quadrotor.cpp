@@ -1,4 +1,4 @@
-#include "Quadcopter.h"
+#include "Quadrotor.h"
 #include <cmath>
 
 #define FORCE_FACTOR 2 * 9.81f / 4 * weight / maxRPS // half power: floating)
@@ -6,7 +6,7 @@
 #define PI 3.14159265f
 #define YAW_FACTOR 0.00001f
 
-Quadcopter::Quadcopter(float size, float weight,
+Quadrotor::Quadrotor(float size, float weight,
 	float maxRPS, float gravity, scene::ISceneNode* parent, scene::ISceneManager* smgr, s32 id)
 	: scene::ISceneNode(parent, smgr, id), weight(weight), gravity(gravity), maxRPS(maxRPS)
 
@@ -26,7 +26,7 @@ Quadcopter::Quadcopter(float size, float weight,
 
 	ISceneNode* rodNodes[2];
 	for (int i = 0; i < 2; ++i) {
-		rodNodes[i] = smgr->addCubeSceneNode(size * 2 * sqrt(2.), this, -1, core::vector3df(0, size*(0.5f - rodSizeFactor) - 0.5f, 0),
+		rodNodes[i] = smgr->addCubeSceneNode(size * 2 * sqrt(2.), this, -1, core::vector3df(0, size*(0.5f - rodSizeFactor) - 1, 0),
 			core::vector3df(0, ((i == 0) ? -45 : 45), 0), core::vector3df(1, rodSizeFactor, rodSizeFactor));
 		rodNodes[i]->getMaterial(0).EmissiveColor = video::SColor(255, 40, 40, 40);
 	}
@@ -38,7 +38,7 @@ Quadcopter::Quadcopter(float size, float weight,
 		rotor[i]->setPosition(core::vector3df(-size + 2 * x*size, size / 2 + size*0.05, -size + 2 * y*size));
 		rotor[i]->setRotation(core::vector3df(90, 0, 180));
 		rotor[i]->setScale(core::vector3df(size/1.7f, size/1.7f, size/1.7f));
-		rotor[i]->getMaterial(0).EmissiveColor = video::SColor(255, 60 + i * 40, 42 + i*40, 42);
+		rotor[i]->getMaterial(0).EmissiveColor = video::SColor(255, 42 + i * 40,  i*40, 42);
 	}
 
 	smgr->addCubeSceneNode(size / 2, weightNode, -1, core::vector3df(size / 4 + 0.2, 0, 0));
@@ -49,7 +49,7 @@ Quadcopter::Quadcopter(float size, float weight,
 }
 
 
-void Quadcopter::setMotorSpeed(float speed[]) {
+void Quadrotor::setMotorSpeed(float speed[]) {
 	for (int i = 0; i < 4; ++i) {
 		if (speed[i] < -1)
 			speed[i] = -1;
@@ -59,7 +59,7 @@ void Quadcopter::setMotorSpeed(float speed[]) {
 	}
 }
 
-void Quadcopter::update(f64 elapsedTime) {
+void Quadrotor::update(f64 elapsedTime) {
 	// Update speed of Rotors
 	for (int i = 0; i < 4; ++i) {
 		motorSpeed[i] += (wantedMotorSpeed[i] - motorSpeed[i]) * (1 - std::exp(-elapsedTime / rotorTimeConstant));
@@ -101,8 +101,9 @@ void Quadcopter::update(f64 elapsedTime) {
 		speed *= 0.2;
 
 	}
-	printf("Position: %.3f %.3f %.3f\n", pos.X, pos.Y, pos.Z);
-	//this->setPosition(pos);
+	
+	//printf("Position: %.3f %.3f %.3f\n", pos.X, pos.Y, pos.Z);
+	this->setPosition(pos);
 
 	return;
 
@@ -110,9 +111,9 @@ void Quadcopter::update(f64 elapsedTime) {
 	core::vector3df rot = this->getRotation();
 
 	core::vector3df angularForce;
-	angularForce.X = size/2 * sqrt(2) * FORCE_FACTOR * 
+	angularForce.X = size/2  * FORCE_FACTOR * 
 		(motorSpeed[0]  + motorSpeed[2] - motorSpeed[1] - motorSpeed[3]);
-	angularForce.Z = size/2 * sqrt(2) * FORCE_FACTOR *
+	angularForce.Z = size/2 * FORCE_FACTOR *
 		(motorSpeed[0] + motorSpeed[1] - motorSpeed[2] - motorSpeed[3]);
 
 	angularForce.Y = (motorSpeed[0] + motorSpeed[3]

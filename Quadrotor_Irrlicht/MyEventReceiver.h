@@ -1,5 +1,6 @@
 #pragma once
 #include <irrlicht.h>
+#include <map>
 
 using namespace irr;
 
@@ -11,6 +12,7 @@ private:
 	scene::ICameraSceneNode** cameras = NULL;
 	int numCameras = 0;
 	scene::ISceneManager* smgr = NULL;
+	std::map<char, bool*> keyMap;
 
 public:
 	// We'll create a struct to record info on the mouse state
@@ -63,6 +65,15 @@ public:
 			}
 		}
 		else if (event.EventType == irr::EET_KEY_INPUT_EVENT) {
+
+			// look up in swap map
+			if (event.KeyInput.PressedDown) {
+				try {
+					bool* swapVar = keyMap.at(event.KeyInput.Char);
+					*swapVar = !*swapVar;
+				}
+				catch (std::out_of_range) {};
+			}
 			switch (event.KeyInput.Key) {
 			case KEY_END:
 				if (event.KeyInput.PressedDown) {
@@ -111,5 +122,13 @@ public:
 	const SMouseState & GetMouseState(void) const
 	{
 		return MouseState;
+	}
+
+	void registerSwap(char key, bool *swap) {
+		keyMap.insert(std::pair<char, bool*>(key, swap));
+	}
+
+	void removeSwap(char key) {
+		keyMap.erase(key);
 	}
 };
