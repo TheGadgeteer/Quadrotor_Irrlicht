@@ -24,6 +24,12 @@
     <ClCompile Include="Quadrotor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Graph.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FuzzySet.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MyEventReceiver.h">
@@ -45,6 +51,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Quadrotor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RingBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FuzzyGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

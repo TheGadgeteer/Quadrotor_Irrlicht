@@ -4,13 +4,13 @@ class PIDController {
 private:
 	float integral;
 	float derivate;
-	float lastIn;
+	float lastE;
 
 	float pF, dF, iF, uF;
 
-	static float control(float in, float dIn, float iIn,
-		float elapsedTime) {
-		return in + dIn + iIn;
+	// Function to be overwritten by subclasses
+	virtual float control(float e, float dE, float iE) {
+		return e + dE + iE;
 	}
 
 public:
@@ -25,14 +25,15 @@ public:
 	void reset() {
 		integral = 0.f;
 		derivate = 0.f;
-		lastIn = 0.f;
+		lastE = 0.f;
 	}
 
-	float control(float in, float elapsedTime) {
-		integral += in * elapsedTime;
-		derivate += (in - lastIn) / elapsedTime;
-		lastIn = in;
-		return uF * control(in * pF, derivate * dF, integral * iF, elapsedTime);
+	float control(float wanted, float in, float elapsedTime) {
+		float e = wanted - in;
+		integral += e * elapsedTime;
+		derivate += (e - lastE) / elapsedTime;
+		lastE = e;
+		return uF * control(e * pF, derivate * dF, integral * iF);
 	}
 
 };

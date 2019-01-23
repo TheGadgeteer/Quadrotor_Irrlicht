@@ -30,7 +30,7 @@ public:
 		: scene::ISceneNode(parent, mgr, id)
 	{
 		Material.Wireframe = false;
-		Material.Lighting = false;
+		//Material.Lighting = false;
 		this->setMaterialTexture(0, texture);
 		Material.BackfaceCulling = false;
 

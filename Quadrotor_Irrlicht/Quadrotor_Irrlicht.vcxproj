@@ -147,6 +147,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FuzzySet.h" />
+    <ClCompile Include="Graph.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainExample.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -158,11 +160,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FuzzyController.h" />
+    <ClInclude Include="FuzzyGraph.h" />
     <ClInclude Include="MyEventReceiver.h" />
     <ClInclude Include="PIDController.h" />
     <ClInclude Include="PlatformNode.h" />
     <ClInclude Include="Quadrotor.h" />
     <ClInclude Include="QuadrotorController.h" />
+    <ClInclude Include="RingBuffer.h" />
     <ClInclude Include="ShaderSetup.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

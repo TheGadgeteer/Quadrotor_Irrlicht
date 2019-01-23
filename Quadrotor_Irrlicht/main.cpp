@@ -1,11 +1,13 @@
 #include <irrlicht.h>
 #include <iostream>
+#include <vector>
 #include "driverChoice.h"
 #include "ShaderSetup.h"
 #include "MyEventReceiver.h"
 #include "Quadrotor.h"
 #include "PlatformNode.h"
-
+#include "Graph.h"
+#include "FuzzyGraph.h"
 using namespace irr;
 
 #define _METER * 100
@@ -51,9 +53,7 @@ int main()
 		psFileName, vsFileName);
 
 	// add a nice skybox
-
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
-
 	smgr->addSkyDomeSceneNode(driver->getTexture("../media/Sky_horiz_3.jpg"));
 	/*smgr->addSkyBoxSceneNode(
 		driver->getTexture("../media/Yokohama2/posy.jpg"),
@@ -65,7 +65,8 @@ int main()
 */
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
-	// add a camera and disable the mouse cursor
+	//add a light source
+	smgr->addLightSceneNode(0, core::vector3df(10 _METER, 10 _METER, 10 _METER), video::SColor(255, 255, 255, 255), 20 _METER);
 
 	scene::ICameraSceneNode* cameras[2];
 	cameras[0] = smgr->addCameraSceneNode();
@@ -75,23 +76,30 @@ int main()
 	
 
 	// add other objects
-	Quadrotor quadrotor(0.4 _METER, 0.7, 12000/60.f, 9.81 _METER, smgr->getRootSceneNode(), smgr, 1001);
+	Quadrotor quadrotor(0.4 _METER, 0.7, 12000/60.f, 9.81f _METER, smgr->getRootSceneNode(), smgr, 1001);
+	float speed[] = { 0.8f, 0.7f, 0.701f, 0.8f };
+	quadrotor.setMotorSpeed(speed);
 
 	PlatformNode* platform = new PlatformNode(20 _METER, 20 _METER,
-		driver->getTexture("../media/wall.bmp"),
-		smgr->getRootSceneNode(), 
-		smgr, 1000);
+		driver->getTexture("../media/wall.bmp"), smgr->getRootSceneNode(), smgr, 1000);
 
+	// setup Graphs and GUI
+	std::vector<Graph> motorGraphLin;
+	std::vector<FuzzyGraph> motorGraphFuzzy;
+
+
+	// Camera stuff
 	smgr->getActiveCamera()->setPosition(core::vector3df(1 _METER, 1 _METER, 1 _METER));
 	smgr->getActiveCamera()->setTarget(quadrotor.getAbsolutePosition());
 	bool isCameraHeightFixed = false;
+	bool isPaused = false;
 	receiver.registerSwap('1', &isCameraHeightFixed);
+	receiver.registerSwap(' ', &isPaused);
 
 	int lastFPS = -1;
 	u32 now, then;
 	then = device->getTimer()->getTime();
-	float speed []= { 60/12000.f, 60/12000.f, 60/12000.f, 0.02f };
-	quadrotor.setMotorSpeed(speed);
+
 	while (device->run())
 		if (device->isWindowActive())
 		{
@@ -99,7 +107,8 @@ int main()
 			f64 elapsedTime = (now - then) / 1000.;
 			then = now;
 
-			quadrotor.update(elapsedTime);
+			if (!isPaused)
+				quadrotor.update(elapsedTime);
 
 			core::vector3df pos = quadrotor.getPosition();
 			pos.X += 1 _METER;
@@ -117,6 +126,7 @@ int main()
 
 			driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
 			smgr->drawAll();
+
 			driver->endScene();
 
 			
@@ -124,7 +134,7 @@ int main()
 
 			if (lastFPS != fps)
 			{
-				core::stringw str = L"Irrlicht Engine - Vertex and pixel shader example [";
+				core::stringw str = L"Irrlicht Engine - Quadrotor Controller [";
 				str += driver->getName();
 				str += "] FPS:";
 				str += fps;

@@ -17,7 +17,7 @@ private:
 	core::vector3df speed = core::vector3df(0, 0, 0);
 
 	const float rodSizeFactor = 0.03f;
-	const float rotorTimeConstant = 1.f;
+	const float rotorTimeConstant = 3.f;
 
 	float size;
 	const float weight, maxRPS, gravity;
@@ -46,6 +46,17 @@ public:
 		driver->setTransform(video::ETS_WORLD, AbsoluteTransformation);
 		driver->drawVertexPrimitiveList(&Vertices[0], 4, indices, 2, video::EVT_STANDARD, scene::EPT_TRIANGLES, video::EIT_16BIT);
 		*/
+	}
+
+	void reset() {
+		this->setPosition(core::vector3df(0, 0, 0));
+		this->setRotation(core::vector3df(0, 0, 0));
+		this->angularSpeed = core::vector3df(0, 0, 0);
+		this->speed = core::vector3df(0, 0, 0);
+		for (int i = 0; i < 4; ++i) {
+			this->wantedMotorSpeed[i] = 0;
+			this->motorSpeed[i] = 0;
+		}
 	}
 
 	void update(f64 elapsedTime);
