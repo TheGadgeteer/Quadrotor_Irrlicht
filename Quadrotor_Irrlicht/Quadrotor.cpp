@@ -17,7 +17,6 @@ Quadrotor::Quadrotor(float size, float weight,
 	: scene::ISceneNode(parent, smgr, id), weight(weight), gravity(gravity), maxRPS(maxRPS)
 
 {
-	Material.Wireframe = false;
 	Material.Lighting = false;
 
 	this->size = size;
@@ -33,8 +32,8 @@ Quadrotor::Quadrotor(float size, float weight,
 	weightNodeMaterial.Lighting = true;
 	weightNodeMaterial.ColorMaterial = video::ECM_AMBIENT;
 	//weightNodeMaterial.EmissiveColor = video::SColor(255, 0, 200, 0);
-	weightNodeMaterial.AmbientColor = video::SColor(255, 250, 250, 10);
-	weightNodeMaterial.DiffuseColor = video::SColor(255, 70, 70, 70);
+	weightNodeMaterial.AmbientColor = video::SColor(255, 50, 50, 50);
+	weightNodeMaterial.DiffuseColor = video::SColor(255, 100, 100, 100);
 
 	ISceneNode* rodNodes[2];
 	for (int i = 0; i < 2; ++i) {
@@ -55,7 +54,9 @@ Quadrotor::Quadrotor(float size, float weight,
 		rotor[i]->getMaterial(0).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
 	}
 
-	smgr->addCubeSceneNode(size / 2, weightNode, -1, core::vector3df(size / 4 + 0.2, 0, 0))->getMaterial(0).DiffuseColor= video::SColor(255, 10, 10, 10);
+	ISceneNode *cubeFront = smgr->addCubeSceneNode(size / 2, weightNode, -1, core::vector3df(size / 4 + 0.2, 0, 0));
+	cubeFront->getMaterial(0).AmbientColor = video::SColor(255, 240, 240, 240);
+	cubeFront->getMaterial(0).EmissiveColor = video::SColor(255, 150, 150, 150);
 	
 	Box.reset(Vertices[0].Pos);
 	for (s32 i = 1; i<4; ++i)

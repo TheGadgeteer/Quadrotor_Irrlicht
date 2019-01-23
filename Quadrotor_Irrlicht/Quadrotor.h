@@ -17,7 +17,7 @@ private:
 	core::vector3df speed = core::vector3df(0, 0, 0);
 
 	const float rodSizeFactor = 0.03f;
-	const float rotorTimeConstant = 3.f;
+	const float rotorTimeConstant = 1.f;
 
 	float size;
 	const float weight, maxRPS, gravity;
@@ -35,14 +35,21 @@ public:
 		ISceneNode::OnRegisterSceneNode();
 	}
 
+	core::vector3df getSpeed() {
+		return speed;
+	}
+
+	core::vector3df getAngularSpeed() {
+		return speed;
+	}
 	// Every element in speed is between -1 and 1
 	void setMotorSpeed(float speed[]);
 
-	int getMotorSpeed(int motor) {
+	float getMotorSpeed(int motor) {
 		return motorSpeed[motor] / maxRPS;
 	}
 
-	int getWantedMotorSpeed(int motor) {
+	float getWantedMotorSpeed(int motor) {
 		return wantedMotorSpeed[motor] / maxRPS;
 	}
 

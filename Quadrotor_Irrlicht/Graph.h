@@ -38,7 +38,7 @@ public:
 		colorFont.set(255, 255, 255, 255);
 
 		this->width = pos.LowerRightCorner.X - pos.UpperLeftCorner.X;
-		this->height = pos.UpperLeftCorner.Y - pos.LowerRightCorner.Y;
+		this->height = pos.LowerRightCorner.Y - pos.UpperLeftCorner.Y;
 	}
 	
 	~Graph() {
@@ -63,21 +63,19 @@ public:
 			int numVals = buffers[i]->getNumElements();
 			if (numVals < 2)
 				continue;
-			float xSpan = (buffers[i]->get(numVals - 1).X - buffers[i]->get(numVals - 2).X) * bufSize;
 			float startVal = buffers[i]->get(0).X;
+			float xSpan = buffers[i]->get(numVals - 1).X - startVal;
 			for (int idx = numVals - 2; idx >= 0; --idx) {
 				core::vector2d<s32> startPos, endPos;
-				startPos.X = (s32)((buffers[i]->get(idx).X - startVal) / xSpan * width);
-				startPos.Y = (s32)(buffers[i]->get(idx).Y / maxVal * height);
-				endPos.X = (s32)((buffers[i]->get(idx+1).X -startVal) / xSpan * width);
-				endPos.Y = (s32)(buffers[i]->get(idx+1).Y / maxVal * height);
-				if (startPos.X < pos.LowerRightCorner.X)
+				startPos.X = (s32)((buffers[i]->get(idx).X - startVal) / xSpan * width) + pos.UpperLeftCorner.X;
+				startPos.Y = pos.LowerRightCorner.Y - (s32)(buffers[i]->get(idx).Y / maxVal * height);
+				endPos.X = (s32)((buffers[i]->get(idx+1).X -startVal) / xSpan * width) + pos.UpperLeftCorner.X;
+				endPos.Y = pos.LowerRightCorner.Y - (s32)(buffers[i]->get(idx+1).Y / maxVal * height);
+				if (startPos.X < pos.UpperLeftCorner.X)
 					break;
 				driver->draw2DRectangle(color, core::rect<s32>(startPos, endPos));
 				driver->draw2DLine(startPos, endPos, color);
 			}
-
-			driver->draw2DLine(pos.UpperLeftCorner, pos.LowerRightCorner, color);
 		}
 	}
 

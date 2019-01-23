@@ -1,5 +1,6 @@
 #pragma once
 #include <irrlicht.h>
+#include "Quadrotor.h"
 #include <map>
 
 using namespace irr;
@@ -11,6 +12,8 @@ class MyEventReceiver : public IEventReceiver
 private:
 	scene::ICameraSceneNode** cameras = NULL;
 	int numCameras = 0;
+	Quadrotor* quadrotor = NULL;
+
 	scene::ISceneManager* smgr = NULL;
 	std::map<char, bool*> keyMap;
 
@@ -96,7 +99,9 @@ public:
 						setActiveCamera(cameras[(idx + 1) % numCameras]);
 				}
 				break;
-				
+			case KEY_KEY_R:
+				if (quadrotor != NULL)
+					quadrotor->reset();
 			}
 		}
 
@@ -117,6 +122,9 @@ public:
 		newActive->setPosition(active->getPosition());
 		newActive->setRotation(active->getRotation());
 		smgr->setActiveCamera(newActive);
+	}
+	void setQuadrotor(Quadrotor* quadrotor) {
+		this->quadrotor = quadrotor;
 	}
 
 	const SMouseState & GetMouseState(void) const
