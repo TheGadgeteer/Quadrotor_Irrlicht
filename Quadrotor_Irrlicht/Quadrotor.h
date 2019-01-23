@@ -38,6 +38,14 @@ public:
 	// Every element in speed is between -1 and 1
 	void setMotorSpeed(float speed[]);
 
+	int getMotorSpeed(int motor) {
+		return motorSpeed[motor] / maxRPS;
+	}
+
+	int getWantedMotorSpeed(int motor) {
+		return wantedMotorSpeed[motor] / maxRPS;
+	}
+
 	virtual void render()
 	{
 		/*video::IVideoDriver* driver = SceneManager->getVideoDriver();

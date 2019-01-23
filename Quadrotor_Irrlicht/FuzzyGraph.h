@@ -23,7 +23,7 @@ class FuzzyGraph : public scene::ISceneNode
 	core::vector2df *vals;
 
 public:
-	FuzzyGraph(wchar_t* caption, core::rect<s32> pos, int numVals,  scene::ISceneManager* mgr, s32 id)
+	FuzzyGraph(const wchar_t* caption, core::rect<s32> pos, int numVals,  scene::ISceneManager* mgr, s32 id)
 		: scene::ISceneNode(0, mgr, id)
 	{
 

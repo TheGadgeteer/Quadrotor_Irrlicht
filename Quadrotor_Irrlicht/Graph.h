@@ -5,79 +5,80 @@
 using namespace irr;
 
 
-class Graph : public scene::ISceneNode
+class Graph
 {
-
-
-	core::aabbox3d<f32> Box;
-	video::S3DVertex Vertices[4];
-	video::SMaterial Material;
-
 	core::rect<s32> pos;
-	video::SColor colorRect;
+	video::SColor colorRect, colorFont;
 
-	wchar_t* caption;
+	core::stringw caption;
 
+	int width, height;
 	int bufSize, numBuffers;
-	RingBuffer<core::vector2df>* buffers;
+	RingBuffer<core::vector2df>** buffers;
 	int nextIdx = 0, numElements = 0;
-
-
+	float maxVal;
+	gui::IGUIFont* font;
 
 public:
-	Graph(wchar_t* caption, core::rect<s32> pos, int numBuffers, int bufSize, scene::ISceneManager* mgr, s32 id)
-		: scene::ISceneNode(0, mgr, id)
+
+	Graph(const wchar_t* caption, core::rect<s32> pos, float maxVal, int numBuffers, int bufSize,
+		gui::IGUIFont* font)
 	{
+		this->caption = caption;
+		this->font = font;
+		this->maxVal = maxVal;
 		this->pos = pos;
 		this->bufSize = bufSize;
 		this->numBuffers = numBuffers;
-		buffers = (RingBuffer<core::vector2df>*) malloc(sizeof(RingBuffer<core::vector2df>) * numBuffers);
+		this->buffers = new RingBuffer<core::vector2df>*[numBuffers];
 		for (int i = 0; i < numBuffers; ++i)
-			buffers[i] = RingBuffer<core::vector2df>(bufSize);
+			buffers[i] = new RingBuffer<core::vector2df>(bufSize);
 
-		colorRect.set(50, 50, 50, 50);
+		colorRect.set(150, 50, 50, 50);
+		colorFont.set(255, 255, 255, 255);
 
-		Box.reset(Vertices[0].Pos);
-		for (s32 i = 1; i<4; ++i)
-			Box.addInternalPoint(Vertices[i].Pos);
+		this->width = pos.LowerRightCorner.X - pos.UpperLeftCorner.X;
+		this->height = pos.UpperLeftCorner.Y - pos.LowerRightCorner.Y;
 	}
-
+	
 	~Graph() {
+		for (int i = 0; i < numBuffers; ++i)
+			delete buffers[i];
 		delete buffers;
 	}
 
 	void addVal(int buffer, core::vector2df val) {
-		buffers[buffer].push(val);
+		buffers[buffer]->push(val);
 	}
 
-	virtual void OnRegisterSceneNode()
-	{
-		if (IsVisible)
-			SceneManager->registerNodeForRendering(this);
 
-		ISceneNode::OnRegisterSceneNode();
-	}
 
-	
-	virtual void render()
+	virtual void render(video::IVideoDriver* driver)
 	{
-		video::IVideoDriver* driver = this->SceneManager->getVideoDriver();
-		driver->enableMaterial2D();
 		driver->draw2DRectangle(colorRect, pos);
+		font->draw(caption, pos, colorFont, true);
+		video::SColor color;
+		for (int i = 0; i < numBuffers; ++i) {
+			color.set(255, 255 * (i == 0), 255 * (i == 1), 255 * (i == 2));
+			int numVals = buffers[i]->getNumElements();
+			if (numVals < 2)
+				continue;
+			float xSpan = (buffers[i]->get(numVals - 1).X - buffers[i]->get(numVals - 2).X) * bufSize;
+			float startVal = buffers[i]->get(0).X;
+			for (int idx = numVals - 2; idx >= 0; --idx) {
+				core::vector2d<s32> startPos, endPos;
+				startPos.X = (s32)((buffers[i]->get(idx).X - startVal) / xSpan * width);
+				startPos.Y = (s32)(buffers[i]->get(idx).Y / maxVal * height);
+				endPos.X = (s32)((buffers[i]->get(idx+1).X -startVal) / xSpan * width);
+				endPos.Y = (s32)(buffers[i]->get(idx+1).Y / maxVal * height);
+				if (startPos.X < pos.LowerRightCorner.X)
+					break;
+				driver->draw2DRectangle(color, core::rect<s32>(startPos, endPos));
+				driver->draw2DLine(startPos, endPos, color);
+			}
+
+			driver->draw2DLine(pos.UpperLeftCorner, pos.LowerRightCorner, color);
+		}
 	}
 
-	virtual const core::aabbox3d<f32>& getBoundingBox() const
-	{
-		return Box;
-	}
-
-	virtual u32 getMaterialCount() const
-	{
-		return 1;
-	}
-
-	virtual video::SMaterial& getMaterial(u32 i)
-	{
-		return Material;
-	}
 };

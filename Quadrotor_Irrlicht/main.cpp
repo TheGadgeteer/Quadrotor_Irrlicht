@@ -1,6 +1,7 @@
 #include <irrlicht.h>
 #include <iostream>
 #include <vector>
+#include <string>
 #include "driverChoice.h"
 #include "ShaderSetup.h"
 #include "MyEventReceiver.h"
@@ -16,6 +17,8 @@ using namespace irr;
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
+#define WIDTH 1024
+#define HEIGHT 768
 
 
 
@@ -36,8 +39,9 @@ int main()
 	MyEventReceiver receiver;
 
 	// create device
-	device = createDevice(driverType, core::dimension2d<u32>(1024, 768), 
+	device = createDevice(driverType, core::dimension2d<u32>(WIDTH, HEIGHT), 
 		32, false, false, true, &receiver);
+
 
 	if (device == 0)
 		return 1; // could not create selected driver.
@@ -77,15 +81,28 @@ int main()
 
 	// add other objects
 	Quadrotor quadrotor(0.4 _METER, 0.7, 12000/60.f, 9.81f _METER, smgr->getRootSceneNode(), smgr, 1001);
-	float speed[] = { 0.8f, 0.7f, 0.701f, 0.8f };
+	float speed[] = { 0.8f, 0.79f, 0.791f, 0.8f };
 	quadrotor.setMotorSpeed(speed);
 
 	PlatformNode* platform = new PlatformNode(20 _METER, 20 _METER,
 		driver->getTexture("../media/wall.bmp"), smgr->getRootSceneNode(), smgr, 1000);
 
 	// setup Graphs and GUI
-	std::vector<Graph> motorGraphLin;
-	std::vector<FuzzyGraph> motorGraphFuzzy;
+	gui::IGUIFont* font = gui->getFont("../media/fonthaettenschweiler.bmp");
+
+	Graph* motorGraphLin[4];
+	FuzzyGraph* motorGraphFuzzy[4];
+	for (int i = 0; i < 4; ++i) {
+		int sizeWidth = 0.22*WIDTH, sizeHeight = 0.22*HEIGHT;
+		int x = i % 2, y = i / 2;
+		core::rect<s32> pos;
+		pos.UpperLeftCorner = core::vector2d<s32>(x*(WIDTH - sizeWidth), y*(HEIGHT - sizeHeight));
+		pos.LowerRightCorner = core::vector2d<s32>(x*(WIDTH - sizeWidth) + sizeWidth, y*(HEIGHT - sizeHeight) + sizeHeight);
+		std::wstring caption = L"Motor ";
+		caption += std::to_wstring(i);
+		motorGraphLin[i] = new Graph(caption.c_str(), pos, 1.f, 2, 10, font);
+		//motorGraphFuzzy[i] = FuzzyGraph(caption.c_str(), pos, 2, smgr, -1);
+	}
 
 
 	// Camera stuff
@@ -95,6 +112,9 @@ int main()
 	bool isPaused = false;
 	receiver.registerSwap('1', &isCameraHeightFixed);
 	receiver.registerSwap(' ', &isPaused);
+
+	bool showFuzzySets = false;
+	receiver.registerSwap('F', &showFuzzySets);
 
 	int lastFPS = -1;
 	u32 now, then;
@@ -127,10 +147,18 @@ int main()
 			driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
 			smgr->drawAll();
 
+
+			for (int i = 0; i < 4; ++i) {
+				motorGraphLin[i]->addVal(0, core::vector2df(now, quadrotor.getMotorSpeed(i)));
+				motorGraphLin[i]->addVal(1, core::vector2df(now, quadrotor.getWantedMotorSpeed(i)));
+				motorGraphLin[i]->render(driver);
+			}		
+			
 			driver->endScene();
 
 			
 			int fps = driver->getFPS();
+			
 
 			if (lastFPS != fps)
 			{
@@ -152,7 +180,11 @@ int main()
 			}
 		}
 
+	for (int i = 0; i < 4; ++i)
+		delete motorGraphLin[i];
+	smgr->drop();
 	platform->drop();
+	quadrotor.drop();
 	device->drop();
 
 	return 0;

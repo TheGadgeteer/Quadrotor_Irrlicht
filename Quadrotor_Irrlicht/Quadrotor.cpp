@@ -113,7 +113,7 @@ void Quadrotor::update(f64 elapsedTime) {
 
 	//printf("motorSpeed: %.3f, force: %.3f %.3f %.3f\n", forceSum, force.X, force.Y, force.Z);
 	
-	printf("Position: %.3f %.3f %.3f\n", pos.X, pos.Y, pos.Z);
+	//printf("Position: %.3f %.3f %.3f\n", pos.X, pos.Y, pos.Z);
 	this->setPosition(pos);
 
 	// Calculate Angular Forces and update Rotation

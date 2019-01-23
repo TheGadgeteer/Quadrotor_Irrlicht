@@ -5,7 +5,7 @@ class RingBuffer {
 private:
 	T* list;
 	int size;
-	int startIdx = -1;
+	int startIdx = 0;
 	int nextWrite = 0;
 	int numElements = 0;
 
@@ -16,6 +16,7 @@ public:
 	}
 
 	~RingBuffer() {
+		printf("free called\n");
 		delete list;
 	}
 
@@ -30,9 +31,8 @@ public:
 
 	T get(int i) {
 		if (numElements == 0)
-			return nullptr;
+			return T();
 		i = (i + startIdx) % size;
-
 		return list[i];
 	}
 
