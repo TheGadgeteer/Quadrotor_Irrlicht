@@ -81,12 +81,15 @@ int main()
 
 	// add other objects
 	Quadrotor quadrotor(0.4 _METER, 0.7, 12000/60.f, 9.81f _METER, smgr->getRootSceneNode(), smgr, 1001);
-	float speed[] = { 0.8f, 0.79f, 0.791f, 0.8f };
+	float speed[] = { 0.8f, 0.4f, 0.4f, 0.8f };
 	quadrotor.setMotorSpeed(speed);
 
 	PlatformNode* platform = new PlatformNode(20 _METER, 20 _METER,
 		driver->getTexture("../media/wall.bmp"), smgr->getRootSceneNode(), smgr, 1000);
 
+	smgr->addSphereSceneNode(20, 16, &quadrotor, -1, core::vector3df(100, 0, 0))->getMaterial(0).EmissiveColor = video::SColor(150, 255, 0, 0);
+	smgr->addSphereSceneNode(20, 16, &quadrotor, -1, core::vector3df(0, 100, 0))->getMaterial(0).EmissiveColor = video::SColor(150, 0, 255, 0);
+	smgr->addSphereSceneNode(20, 16, &quadrotor, -1, core::vector3df(0, 0, 100))->getMaterial(0).EmissiveColor = video::SColor(150, 0, 0, 255);
 	// setup Graphs and GUI
 	gui::IGUIFont* font = gui->getFont("../media/fonthaettenschweiler.bmp");
 
@@ -96,8 +99,8 @@ int main()
 		int sizeWidth = 0.22*WIDTH, sizeHeight = 0.22*HEIGHT;
 		int x = i % 2, y = i / 2;
 		core::rect<s32> pos;
-		pos.UpperLeftCorner = core::vector2d<s32>(x*(WIDTH - sizeWidth), y*(HEIGHT - sizeHeight));
-		pos.LowerRightCorner = core::vector2d<s32>(x*(WIDTH - sizeWidth) + sizeWidth, y*(HEIGHT - sizeHeight) + sizeHeight);
+		pos.UpperLeftCorner = core::vector2d<s32>(x*(WIDTH - sizeWidth), y*(HEIGHT - sizeHeight - 1));
+		pos.LowerRightCorner = core::vector2d<s32>(x*(WIDTH - sizeWidth) + sizeWidth, y*(HEIGHT - sizeHeight - 1) + sizeHeight);
 		std::wstring caption = L"Motor ";
 		caption += std::to_wstring(i);
 		motorGraphLin[i] = new Graph(caption.c_str(), pos, 1.f, 2, 30, font);

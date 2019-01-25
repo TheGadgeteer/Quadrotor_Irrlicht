@@ -81,7 +81,8 @@ void Quadrotor::update(f64 elapsedTime) {
 	for (int i = 0; i < 4; ++i) {
 		motorSpeed[i] += (wantedMotorSpeed[i] - motorSpeed[i]) * (1 - std::exp(-elapsedTime / rotorTimeConstant));
 		core::vector3df rot = rotor[i]->getRotation();
-		rot.Y += (i == 0 || i == 3 ? 1 : -1) * motorSpeed[i] * 360 * elapsedTime; // rotation in degree, not radian
+		// Positive Rotation = counterclockwise; motors 0 and 3 are turning clockwise
+		rot.Y += (i == 0 || i == 3 ? -1 : 1) * motorSpeed[i] * 360 * elapsedTime; // rotation in degree, not radian
 		rotor[i]->setRotation(rot);
 	}
 
@@ -121,12 +122,11 @@ void Quadrotor::update(f64 elapsedTime) {
 	rot = this->getRotation();
 	
 	core::vector3df angularForce;
-	angularForce.X = size/2  * FORCE_FACTOR * 
-		(-motorSpeed[0]  - motorSpeed[2] + motorSpeed[1] + motorSpeed[3]);
-	angularForce.Z = - size/2 * FORCE_FACTOR *
-		(-motorSpeed[0] - motorSpeed[1] + motorSpeed[2] + motorSpeed[3]);
-	angularForce.Y = (motorSpeed[0] + motorSpeed[3]
-		- motorSpeed[1] - motorSpeed[2]) * YAW_FACTOR;
+	angularForce.X = size / 2 * FORCE_FACTOR *
+		(-motorSpeed[0] + motorSpeed[1] - motorSpeed[2] + motorSpeed[3]);
+	angularForce.Z = size / 2 * FORCE_FACTOR *
+		(motorSpeed[0] + motorSpeed[1] - motorSpeed[2] - motorSpeed[3]);
+	angularForce.Y = (-motorSpeed[0] - motorSpeed[3] + motorSpeed[1] + motorSpeed[2]) * YAW_FACTOR;
 	//printf("angular Force: %.3f %.3f %.3f\n",angularForce.X, angularForce.Y, angularForce.Z);
 
 	// Approximation for aerodynamic drag

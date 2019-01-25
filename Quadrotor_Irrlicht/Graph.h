@@ -73,7 +73,7 @@ public:
 				endPos.Y = pos.LowerRightCorner.Y - (s32)(buffers[i]->get(idx+1).Y / maxVal * height);
 				if (startPos.X < pos.UpperLeftCorner.X)
 					break;
-				driver->draw2DRectangle(color, core::rect<s32>(startPos, endPos));
+				//driver->draw2DRectangle(color, core::rect<s32>(startPos, endPos));
 				driver->draw2DLine(startPos, endPos, color);
 			}
 		}

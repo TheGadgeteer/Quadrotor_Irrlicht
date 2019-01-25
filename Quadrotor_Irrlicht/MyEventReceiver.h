@@ -102,6 +102,44 @@ public:
 			case KEY_KEY_R:
 				if (quadrotor != NULL)
 					quadrotor->reset();
+				break;
+			case KEY_KEY_0:
+				if (quadrotor != NULL) {
+					float desiredSpeed[] = { 0.005f, 0.005f, 0.005f, 0.005f };
+					quadrotor->setMotorSpeed(desiredSpeed);
+				}
+				break;
+			case KEY_KEY_9:
+				if (quadrotor != NULL) {
+					float desiredSpeed[] = { 0.5f, 0.5f, 0.5f, 0.5f };
+					quadrotor->setMotorSpeed(desiredSpeed);
+				}
+				break;
+			case KEY_KEY_8:
+				if (quadrotor != NULL) {
+					float desiredSpeed[] = { 0.7f, 0.2f, 0.2f, 0.7f };
+					quadrotor->setMotorSpeed(desiredSpeed);
+				}
+				break;
+			case KEY_KEY_7:
+				if (quadrotor != NULL) {
+					float desiredSpeed[] = { 0.7003f, 0.7003f, 0.6997f, 0.6997f };
+					quadrotor->setMotorSpeed(desiredSpeed);
+				}
+				break;
+			case KEY_KEY_6:
+				if (quadrotor != NULL) {
+					float desiredSpeed[] = { 0.7003f, 0.6997f, 0.7003f, 0.6997f };
+					quadrotor->setMotorSpeed(desiredSpeed);
+				}
+				break;
+			case KEY_KEY_5:
+				if (quadrotor != NULL) {
+					float desiredSpeed[] = { 1.f, 1.f, 1.f, 1.f };
+					quadrotor->setMotorSpeed(desiredSpeed);
+				}
+				break;
+
 			}
 		}
 
