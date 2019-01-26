@@ -19,13 +19,13 @@ using namespace irr;
 #endif
 
 #define WIDTH 1366
-#define HEIGHT 768
+#define HEIGHT 740
 
+void drawCoordinateSystem(Quadrotor* quadrotor, video::IVideoDriver *driver);
 
 IrrlichtDevice* device = 0;
 bool UseHighLevelShaders = false;
 float fpsMax = 250;
-
 
 int main()
 {
@@ -57,15 +57,15 @@ int main()
 
 	// add a nice skybox
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
-	smgr->addSkyDomeSceneNode(driver->getTexture("../media/Sky_horiz_3.jpg"));
-	/*smgr->addSkyBoxSceneNode(
-		driver->getTexture("../media/Yokohama2/posy.jpg"),
-		driver->getTexture("../media/Yokohama2/negy.jpg"),
-		driver->getTexture("../media/Yokohama2/negz.jpg"),
-		driver->getTexture("../media/Yokohama2/posz.jpg"),
-		driver->getTexture("../media/Yokohama2/negx.jpg"),
-		driver->getTexture("../media/Yokohama2/posx.jpg"));
-*/
+	//smgr->addSkyDomeSceneNode(driver->getTexture("../media/Sky_horiz_3.jpg"));
+	smgr->addSkyBoxSceneNode(
+		driver->getTexture("../media/irrlicht2_up.jpg"),
+		driver->getTexture("../media/irrlicht2_dn.jpg"),
+		driver->getTexture("../media/irrlicht2_lf.jpg"),
+		driver->getTexture("../media/irrlicht2_rt.jpg"),
+		driver->getTexture("../media/irrlicht2_ft.jpg"),
+		driver->getTexture("../media/irrlicht2_bk.jpg"));
+
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
 	//add a light source
@@ -110,10 +110,10 @@ int main()
 	// Camera stuff
 	smgr->getActiveCamera()->setPosition(core::vector3df(1 _METER, 1 _METER, 1 _METER));
 	smgr->getActiveCamera()->setTarget(quadrotor.getAbsolutePosition());
-	bool isCameraHeightFixed = false;
-	bool isPaused = false, wasPaused = false;
+	bool isCameraHeightFixed = false, isPaused = false, drawCoordSys = false;
 	receiver.registerSwap('1', &isCameraHeightFixed);
 	receiver.registerSwap(' ', &isPaused);
+	receiver.registerSwap('c', &drawCoordSys);
 
 	bool showFuzzySets = false;
 	receiver.registerSwap('F', &showFuzzySets);
@@ -177,6 +177,8 @@ int main()
 			driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
 			smgr->drawAll();
 
+			if (drawCoordSys)
+				drawCoordinateSystem(&quadrotor, driver);
 
 			// Draw info graphics + text
 			for (int i = 0; i < 4; ++i) {
@@ -190,10 +192,10 @@ int main()
 			font->draw(posStr, core::rect<s32>(WIDTH / 2 - 500, 0, WIDTH / 2 + 500, 30), video::SColor(255, 255, 255, 255), true, true);
 			font->draw(rotStr, core::rect<s32>(WIDTH / 2 - 500, 20, WIDTH / 2 + 500, 50), video::SColor(255, 255, 255, 255), true, true);
 				
+
 			driver->endScene();
 
 			int fps = driver->getFPS();
-			
 			if (lastFPS != fps) {
 				core::stringw str = L"Irrlicht Engine - Quadrotor Controller [";
 				str += driver->getName();
@@ -217,6 +219,17 @@ int main()
 	platform->drop();
 	quadrotor.drop();
 	device->drop();
-
 	return 0;
+}
+
+void drawCoordinateSystem(Quadrotor* quadrotor, video::IVideoDriver *driver) {
+	// TODO: Gewünschte Farbe wird nicht gemalt
+	video::SColor color;
+	core::vector3df startPos(0, 0, 0), endPos;
+	driver->setTransform(video::ETS_WORLD, quadrotor->getAbsoluteTransformation());
+	for (int i = 0; i < 3; ++i) {
+		color.set(255, i == 0 ? 255 : 0, i == 1 ? 255 : 0, i == 2 ? 255 : 0);
+		endPos.set(i == 0 ? 1 _METER : 0, i == 1 ? 1 _METER : 0, i == 2 ? 1 _METER : 0);
+		driver->draw3DLine(startPos, endPos, color);
+	}
 }

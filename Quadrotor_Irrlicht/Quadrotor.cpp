@@ -27,7 +27,6 @@ Quadrotor::Quadrotor(float size, float weight,
 
 	ISceneNode* weightNode = smgr->addCubeSceneNode(size, this, -1, core::vector3df(0, size/4, 0));
 	weightNode->setScale(core::vector3df(1, 0.5f, 1.f));
-
 	video::SMaterial& weightNodeMaterial = weightNode->getMaterial(0);
 	weightNodeMaterial.Lighting = true;
 	weightNodeMaterial.ColorMaterial = video::ECM_AMBIENT;
