@@ -4,7 +4,7 @@
 #define _METER *100
 
 #define FORCE_FACTOR (2 * 9.81f _METER / 4 * weight / maxRPS) // half power: floating)
-#define DRAG_PER_SPEED  14.24f // A 80kg person will have static speed at 200 km/h (55 m/s)
+#define DRAG_PER_SPEED  0.175f // A 80kg person will have static speed at 200 km/h (55 m/s)
 #define PI 3.14159265f
 #define YAW_FACTOR 1.f
 #define INERTIA (2*weight*WEIGHT_OUTER_FACTOR * size/2*size/2) // Two propellers opposite, distance to mid size/2, weight weight*WEIGHT_OUTER_FACTOR
@@ -129,7 +129,7 @@ void Quadrotor::update(f64 elapsedTime) {
 	//printf("angular Force: %.3f %.3f %.3f\n",angularForce.X, angularForce.Y, angularForce.Z);
 
 	// Approximation for aerodynamic drag
-	angularForce -= angularSpeed *2*PI/360 * size/2 * DRAG_PER_SPEED / 4;
+	angularForce -= angularSpeed *2*PI/360 * size/2 * DRAG_PER_SPEED;
 
 	angularSpeed += angularForce * 1.f / INERTIA * elapsedTime * 360 / 2 / PI; // in degrees
 	//printf("angular Speed: %.3f %.3f %.3f, elapsedTime: %f\n", angularSpeed.X, angularSpeed.Y, angularSpeed.Z, elapsedTime);

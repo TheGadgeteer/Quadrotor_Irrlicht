@@ -51,13 +51,14 @@ int main()
 
 	io::path vsFileName; // filename for the vertex shader
 	io::path psFileName; // filename for the pixel shader
-
+	
 	setupShader(device, UseHighLevelShaders, driver, driverType,
 		psFileName, vsFileName);
-
+	
 	// add a nice skybox
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 	//smgr->addSkyDomeSceneNode(driver->getTexture("../media/Sky_horiz_3.jpg"));
+	//TODO: Skybox löst beim Beenden Reference-Error aus !?
 	smgr->addSkyBoxSceneNode(
 		driver->getTexture("../media/irrlicht2_up.jpg"),
 		driver->getTexture("../media/irrlicht2_dn.jpg"),
@@ -67,17 +68,18 @@ int main()
 		driver->getTexture("../media/irrlicht2_bk.jpg"));
 
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
-
+	
 	//add a light source
-	smgr->addLightSceneNode(0, core::vector3df(10 _METER, 10 _METER, 10 _METER), video::SColor(255, 255, 255, 255), 50 _METER);
-
+	smgr->addLightSceneNode(0, core::vector3df(10 _METER, 10 _METER, 10 _METER), 
+		video::SColor(255, 255, 255, 255), 50 _METER);
+	
 	scene::ICameraSceneNode* cameras[2];
 	cameras[0] = smgr->addCameraSceneNode();
 	cameras[1] = smgr->addCameraSceneNodeFPS();
-
+	
 	receiver.setCameras(cameras, 2);
 	
-
+	
 	// add other objects
 	Quadrotor quadrotor(0.4 _METER, 0.7, 12000/60.f, 9.81f _METER, smgr->getRootSceneNode(), smgr, 1001);
 	float speed[] = { 0.8f, 0.4f, 0.4f, 0.8f };
@@ -106,7 +108,7 @@ int main()
 		//motorGraphFuzzy[i] = FuzzyGraph(caption.c_str(), pos, 2, smgr, -1);
 	}
 
-
+	
 	// Camera stuff
 	smgr->getActiveCamera()->setPosition(core::vector3df(1 _METER, 1 _METER, 1 _METER));
 	smgr->getActiveCamera()->setTarget(quadrotor.getAbsolutePosition());
@@ -162,6 +164,7 @@ int main()
 
 			// Drawing stuff:
 			// Update camera
+			
 			if (smgr->getActiveCamera() == cameras[0]) {
 
 				cameras[0]->setPosition(quadrotor.getAbsolutePosition() + core::vector3df(1 _METER, 1 _METER, 1 _METER));
@@ -172,7 +175,7 @@ int main()
 				camPos.Y = quadrotor.getAbsolutePosition().Y + 1.5f _METER;
 				cameras[1]->setPosition(camPos);
 			}
-
+			
 			// Draw scene
 			driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
 			smgr->drawAll();
@@ -191,7 +194,6 @@ int main()
 				delayedRot.X, delayedRot.Y, delayedRot.Z, delayedRotSpeed.X, delayedRotSpeed.Y, delayedRotSpeed.Z);
 			font->draw(posStr, core::rect<s32>(WIDTH / 2 - 500, 0, WIDTH / 2 + 500, 30), video::SColor(255, 255, 255, 255), true, true);
 			font->draw(rotStr, core::rect<s32>(WIDTH / 2 - 500, 20, WIDTH / 2 + 500, 50), video::SColor(255, 255, 255, 255), true, true);
-				
 
 			driver->endScene();
 
@@ -212,12 +214,11 @@ int main()
 				_sleep(restTime);
 			}
 		}
-
+	
 	for (int i = 0; i < 4; ++i)
 		delete motorGraphLin[i];
 	smgr->drop();
 	platform->drop();
-	quadrotor.drop();
 	device->drop();
 	return 0;
 }
