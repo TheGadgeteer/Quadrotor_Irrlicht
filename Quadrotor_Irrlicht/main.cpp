@@ -18,7 +18,7 @@ using namespace irr;
 #pragma comment(lib, "Irrlicht.lib")
 #endif
 
-#define WIDTH 1024
+#define WIDTH 1366
 #define HEIGHT 768
 
 
@@ -41,7 +41,6 @@ int main()
 	// create device
 	device = createDevice(driverType, core::dimension2d<u32>(WIDTH, HEIGHT), 
 		32, false, false, false, &receiver);
-
 
 	if (device == 0)
 		return 1; // could not create selected driver.
@@ -87,9 +86,9 @@ int main()
 	PlatformNode* platform = new PlatformNode(20 _METER, 20 _METER,
 		driver->getTexture("../media/wall.bmp"), smgr->getRootSceneNode(), smgr, 1000);
 
-	smgr->addSphereSceneNode(20, 16, &quadrotor, -1, core::vector3df(100, 0, 0))->getMaterial(0).EmissiveColor = video::SColor(150, 255, 0, 0);
-	smgr->addSphereSceneNode(20, 16, &quadrotor, -1, core::vector3df(0, 100, 0))->getMaterial(0).EmissiveColor = video::SColor(150, 0, 255, 0);
-	smgr->addSphereSceneNode(20, 16, &quadrotor, -1, core::vector3df(0, 0, 100))->getMaterial(0).EmissiveColor = video::SColor(150, 0, 0, 255);
+	//smgr->addSphereSceneNode(20, 16, &quadrotor, -1, core::vector3df(100, 0, 0))->getMaterial(0).EmissiveColor = video::SColor(150, 255, 0, 0);
+	//smgr->addSphereSceneNode(20, 16, &quadrotor, -1, core::vector3df(0, 100, 0))->getMaterial(0).EmissiveColor = video::SColor(150, 0, 255, 0);
+	//smgr->addSphereSceneNode(20, 16, &quadrotor, -1, core::vector3df(0, 0, 100))->getMaterial(0).EmissiveColor = video::SColor(150, 0, 0, 255);
 	// setup Graphs and GUI
 	gui::IGUIFont* font = gui->getFont("../media/fonthaettenschweiler.bmp");
 
