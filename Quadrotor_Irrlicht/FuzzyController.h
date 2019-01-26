@@ -1,15 +1,42 @@
 #pragma once
-#include "PIDController.h"
 #include <stdio.h>
+#include "TrapezoidalFuzzySet.h"
 
-class FuzzyController : PIDController {
+enum DefuzzificationStrategy {
+	FC_DEFUZZI_MOM,
+	FC_DEFUZZI_COS,
+	FC_DEFUZZI_COA
+};
+
+struct FuzzyVar {
+	unsigned int numTerms;
+	TrapezoidalFuzzySet *terms;
+};
+
+struct FuzzyVarTermPair {
+	FuzzyVar* var;
+	unsigned int termIdx;
+};
+
+struct FuzzyRule {
+	FuzzyVarTermPair* conditions;
+	unsigned int numConditions;
+
+};
+
+class FuzzyPDController {
 private:
-	static float control(float in, float dIn, float iIn,
-		float elapsedTime) {
-		printf("Fuzzy Controller control called");
-		return 0.f;
-	}
+	int numInput;
+	DefuzzificationStrategy defuzStrat;
+
+
 public:
-	FuzzyController() : PIDController() {
+	FuzzyPDController(int numInputVars, DefuzzificationStrategy strat) :
+	numInput(numInputVars), ,defuzStrat(strat){
+
+	}
+
+	float control(float *input) {
+		return 0.f;
 	}
 };

@@ -27,7 +27,7 @@
     <ClCompile Include="Graph.h">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="FuzzySet.h">
+    <ClCompile Include="TrapezoidalFuzzySet.h">
       <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,13 +5,13 @@
 using namespace irr;
 
 // Represents a trapezoidal fuzzy set.
-class FuzzySet {
+class TrapezoidalFuzzySet {
 private:
 	float leftLow, leftHigh, rightHigh, rightLow;
 	float minVal, maxVal;
 
 public:
-	FuzzySet(float leftLow, float leftHigh, float rightHigh, float rightLow, float minVal, float maxVal) {
+	TrapezoidalFuzzySet(float leftLow, float leftHigh, float rightHigh, float rightLow, float minVal, float maxVal) {
 		this->leftLow = leftLow;
 		this->leftHigh = leftHigh;
 		this->rightHigh = rightHigh;
