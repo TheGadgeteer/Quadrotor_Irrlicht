@@ -10,6 +10,8 @@
 #include "Graph.h"
 #include "FuzzyGraph.h"
 
+#include "FuzzyPDController.h"
+
 using namespace irr;
 
 #define _METER *100
@@ -81,8 +83,8 @@ int main()
 	
 	
 	// add other objects
-	Quadrotor quadrotor(0.4 _METER, 0.7, 12000/60.f, 9.81f _METER, smgr->getRootSceneNode(), smgr, 1001);
-	float speed[] = { 0.8f, 0.4f, 0.4f, 0.8f };
+	Quadrotor quadrotor(0.4 _METER, 0.7f, 12000/60.f, 9.81f _METER, smgr->getRootSceneNode(), smgr, 1001);
+	float speed[] = { 0.01f, 0.01f, 0.01f, 0.01f };
 	quadrotor.setMotorSpeed(speed);
 
 	PlatformNode* platform = new PlatformNode(20 _METER, 20 _METER,
@@ -97,7 +99,7 @@ int main()
 	Graph* motorGraphLin[4];
 	FuzzyGraph* motorGraphFuzzy[4];
 	for (int i = 0; i < 4; ++i) {
-		int sizeWidth = 0.22*WIDTH, sizeHeight = 0.22*HEIGHT;
+		int sizeWidth = (int)(0.22*WIDTH), sizeHeight = (int)(0.22*HEIGHT);
 		int x = i % 2, y = i / 2;
 		core::rect<s32> pos;
 		pos.UpperLeftCorner = core::vector2d<s32>(x*(WIDTH - sizeWidth), y*(HEIGHT - sizeHeight - 1));
@@ -122,8 +124,8 @@ int main()
 	receiver.setQuadrotor(&quadrotor);
 
 
-	int lastFPS = -1;
-	float maxElapsedTimeMs = 1 / fpsMax * 1000.f;
+	u32 lastFPS = -1;
+	u32 maxElapsedTimeMs = (u32)round(1000.f / fpsMax);
 
 	u32 now, then;
 	now = device->getTimer()->getTime();
@@ -209,7 +211,7 @@ int main()
 			}
 
 			// cap FPS
-			u32 restTime = maxElapsedTimeMs - (device->getTimer()->getTime() - now);
+			u32 restTime = maxElapsedTimeMs - device->getTimer()->getTime() - now;
 			if (restTime > 0) {
 				_sleep(restTime);
 			}
@@ -230,7 +232,7 @@ void drawCoordinateSystem(Quadrotor* quadrotor, video::IVideoDriver *driver) {
 	driver->setTransform(video::ETS_WORLD, quadrotor->getAbsoluteTransformation());
 	for (int i = 0; i < 3; ++i) {
 		color.set(255, i == 0 ? 255 : 0, i == 1 ? 255 : 0, i == 2 ? 255 : 0);
-		endPos.set(i == 0 ? 1 _METER : 0, i == 1 ? 1 _METER : 0, i == 2 ? 1 _METER : 0);
+ 		endPos.set(i == 0 ? 1 _METER : 0, i == 1 ? 1 _METER : 0, i == 2 ? 1 _METER : 0);
 		driver->draw3DLine(startPos, endPos, color);
 	}
 }

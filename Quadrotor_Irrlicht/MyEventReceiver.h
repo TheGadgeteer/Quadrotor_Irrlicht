@@ -15,7 +15,7 @@ private:
 	Quadrotor* quadrotor = NULL;
 
 	scene::ISceneManager* smgr = NULL;
-	std::map<char, bool*> keyMap;
+	std::map<wchar_t, bool*> keyMap;
 
 public:
 	// We'll create a struct to record info on the mouse state

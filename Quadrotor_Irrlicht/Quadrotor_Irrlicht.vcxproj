@@ -23,7 +23,7 @@
     <ProjectGuid>{FEB5BAF4-7A4D-408F-8776-A91257814BDB}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>Quadrotor_Irrlicht</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -82,8 +82,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Severin\C++ Projects\3DirectX\irrlicht-1.8.4\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Severin\C++ Projects\3DirectX\irrlicht-1.8.4\lib\Win64-visualStudio;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\Severin\Documents\3DirectX\irrlicht-1.8.4\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\Severin\Documents\3DirectX\irrlicht-1.8.4\lib\Win64-visualStudio;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -147,7 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FuzzySet.h" />
+    <ClCompile Include="TrapezoidalFuzzySet.h" />
     <ClCompile Include="Graph.h" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainExample.cpp">
@@ -159,9 +159,10 @@
     <ClCompile Include="Quadrotor.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FuzzyController.h" />
+    <ClInclude Include="FuzzyPDController.h" />
     <ClInclude Include="FuzzyGraph.h" />
     <ClInclude Include="MyEventReceiver.h" />
+    <ClInclude Include="PDController.h" />
     <ClInclude Include="PIDController.h" />
     <ClInclude Include="PlatformNode.h" />
     <ClInclude Include="Quadrotor.h" />

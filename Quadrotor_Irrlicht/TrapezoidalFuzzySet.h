@@ -12,6 +12,7 @@ private:
 
 public:
 	TrapezoidalFuzzySet(float leftLow, float leftHigh, float rightHigh, float rightLow, float minVal, float maxVal) {
+		static_assert(minVal <= maxVal);
 		this->leftLow = leftLow;
 		this->leftHigh = leftHigh;
 		this->rightHigh = rightHigh;
@@ -23,12 +24,14 @@ public:
 	float at(float mu) {
 		if (mu <= leftLow || mu >= rightLow)
 			return minVal;
-		else if (leftHigh <= mu <= rightHigh)
+		else if (leftHigh <= mu && mu <= rightHigh)
 			return maxVal;
-		else if (leftLow < mu < leftHigh)
+		else if (leftLow < mu && mu < leftHigh)
 			return (maxVal - minVal) / (leftHigh - leftLow) * (mu - leftLow) + minVal;
-		else
+		else // rightHigh < mu < rightLow
 			return (minVal - maxVal) / (rightLow - rightHigh) * (mu - rightHigh) + maxVal;
 	}
+
+	float get
 
 };

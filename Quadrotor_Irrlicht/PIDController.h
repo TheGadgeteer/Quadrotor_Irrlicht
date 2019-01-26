@@ -1,10 +1,10 @@
 #pragma once
+#include "PDController.h"
 
-class PIDController {
+class PIDController : PDController {
 private:
-	float pF, dF, iF, uF;
+	float iF;
 
-	// Function to be overwritten by subclasses
 	virtual float controlInner(float e, float dE, float iE) {
 		return e + dE + iE;
 	}
@@ -17,8 +17,11 @@ public:
 		this->uF = uF;
 	}
 
+	virtual float control(float e, float dE) {
+		return control(e, dE, 0);
+	}
 
-	float control(float e, float dE, float iE) {	
+	virtual float control(float e, float dE, float iE) {	
 		return uF * controlInner(e * pF, dE * dF, iE * iF);
 	}
 	
