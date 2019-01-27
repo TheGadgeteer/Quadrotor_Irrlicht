@@ -67,9 +67,17 @@ public:
 				break;
 
 			case FC_DEFUZZI_MOM:
-				float leftMax, rightMax, max = 0.f;
-				for (int termIdx = 0; termIdx < outVar->numTerms; ++termIdx) {
-					if (fmin(outVar->terms[termIdx]))
+				float leftMax = -FLT_MAX, rightMax = FLT_MAX, max = 0.f;
+				for (unsigned int termIdx = 0; termIdx < outVar->numTerms; ++termIdx) {
+					float termMaxVal = fmin(outVar->terms[termIdx].getMaxVal(), outTermCap[termIdx]);
+					if (termMaxVal >= max) {
+						float maxCoord1 = outVar->terms[termIdx].inverseAt_min(termMaxVal);
+						float maxCoord2 = outVar->terms[termIdx].inverseAt_max(termMaxVal);
+						if (leftMax > maxCoord1 || max < termMaxVal)
+							leftMax = maxCoord1;
+						if (rightMax < maxCoord2 || max < termMaxVal)
+							rightMax = maxCoord2;
+					}
 				}
 				outControlVal = (leftMax + rightMax) / 2;
 				break;

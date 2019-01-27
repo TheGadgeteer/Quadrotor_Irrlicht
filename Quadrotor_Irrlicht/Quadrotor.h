@@ -74,7 +74,7 @@ public:
 		}
 	}
 
-	void update(f64 elapsedTime);
+	void update(f32 elapsedTime);
 
 
 	virtual const core::aabbox3d<f32>& getBoundingBox() const

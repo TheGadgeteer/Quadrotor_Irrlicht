@@ -2,6 +2,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <Windows.h>
 #include "driverChoice.h"
 #include "ShaderSetup.h"
 #include "MyEventReceiver.h"
@@ -27,7 +28,7 @@ void drawCoordinateSystem(Quadrotor* quadrotor, video::IVideoDriver *driver);
 
 IrrlichtDevice* device = 0;
 bool UseHighLevelShaders = false;
-float fpsMax = 250;
+float fpsMax = 200;
 
 int main()
 {
@@ -133,7 +134,6 @@ int main()
 	u32 timeWorld = 0;
 
 	core::vector3df delayedPos, delayedRot, delayedSpeed, delayedRotSpeed;
-
 	while (device->run())
 		if (device->isWindowActive())
 		{
@@ -153,8 +153,8 @@ int main()
 				if (now - lastUpdate > 150) {
 					lastUpdate = now;
 					for (int i = 0; i < 4; ++i) {
-						motorGraphLin[i]->addVal(0, core::vector2df(timeWorld, quadrotor.getMotorSpeed(i)));
-						motorGraphLin[i]->addVal(1, core::vector2df(timeWorld, quadrotor.getWantedMotorSpeed(i)));
+						motorGraphLin[i]->addVal(0, core::vector2df((f32)timeWorld, quadrotor.getMotorSpeed(i)));
+						motorGraphLin[i]->addVal(1, core::vector2df((f32)timeWorld, quadrotor.getWantedMotorSpeed(i)));
 					}
 
 					delayedPos = quadrotor.getAbsolutePosition();
@@ -163,7 +163,7 @@ int main()
 					delayedRotSpeed = quadrotor.getAngularSpeed();
 				}
 			} 
-
+			
 			// Drawing stuff:
 			// Update camera
 			
@@ -209,12 +209,13 @@ int main()
 				device->setWindowCaption(str.c_str());
 				lastFPS = fps;
 			}
-
+			
 			// cap FPS
-			u32 restTime = maxElapsedTimeMs - device->getTimer()->getTime() - now;
+			u32 restTime = maxElapsedTimeMs - (device->getTimer()->getTime() - now);
 			if (restTime > 0) {
-				_sleep(restTime);
+				Sleep(restTime);
 			}
+			
 		}
 	
 	for (int i = 0; i < 4; ++i)
@@ -232,7 +233,7 @@ void drawCoordinateSystem(Quadrotor* quadrotor, video::IVideoDriver *driver) {
 	driver->setTransform(video::ETS_WORLD, quadrotor->getAbsoluteTransformation());
 	for (int i = 0; i < 3; ++i) {
 		color.set(255, i == 0 ? 255 : 0, i == 1 ? 255 : 0, i == 2 ? 255 : 0);
- 		endPos.set(i == 0 ? 1 _METER : 0, i == 1 ? 1 _METER : 0, i == 2 ? 1 _METER : 0);
+ 		endPos.set(i == 0 ? 1.f _METER : 0.f, i == 1 ? 1.f _METER : 0.f, i == 2 ? 1.f _METER : 0.f);
 		driver->draw3DLine(startPos, endPos, color);
 	}
 }

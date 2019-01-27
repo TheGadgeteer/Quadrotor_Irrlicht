@@ -1,18 +1,17 @@
 #pragma once
 
-#include <irrlicht.h>
-
-using namespace irr;
+#include <assert.h>
+#include <float.h>
 
 // Represents a trapezoidal fuzzy set.
 class TrapezoidalFuzzySet {
 private:
 	float leftLow, leftHigh, rightHigh, rightLow;
 	float minVal, maxVal;
-
+	float minDefinedX, maxDefinedX;
 public:
 	TrapezoidalFuzzySet(float leftLow, float leftHigh, float rightHigh, float rightLow, float minVal, float maxVal) {
-		static_assert(minVal <= maxVal);
+		assert(minVal <= maxVal);
 		this->leftLow = leftLow;
 		this->leftHigh = leftHigh;
 		this->rightHigh = rightHigh;
@@ -32,6 +31,31 @@ public:
 			return (minVal - maxVal) / (rightLow - rightHigh) * (mu - rightHigh) + maxVal;
 	}
 
-	float get
+	// val must be >= minVal and <= maxVal
+	float inverseAt_min(float val) {
+		if (val == maxVal)
+			return leftHigh;
+		else if (val == minVal)
+			return -FLT_MAX;
+		else
+			return (val - minVal) * (leftHigh - leftLow) / (maxVal - minVal) + leftLow;
+	}
+
+	// val must be >= minVal and <= maxVal
+	float inverseAt_max(float val) {
+		if (val == maxVal)
+			return rightHigh;
+		else if (val == minVal)
+			return FLT_MAX;
+		else
+			return (val - maxVal) * (rightLow - rightHigh) / (minVal - maxVal) + rightHigh;
+	}
+
+	float getMaxVal() {
+		return maxVal;
+	}
+	float getMinVal() {
+		return minVal;
+	}
 
 };

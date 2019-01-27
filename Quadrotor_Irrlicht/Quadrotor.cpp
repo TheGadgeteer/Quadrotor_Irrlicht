@@ -36,8 +36,8 @@ Quadrotor::Quadrotor(float size, float weight,
 
 	ISceneNode* rodNodes[2];
 	for (int i = 0; i < 2; ++i) {
-		rodNodes[i] = smgr->addCubeSceneNode(size * 2 * sqrt(2.), this, -1, core::vector3df(0, size*(0.5f - rodSizeFactor) - 1, 0),
-			core::vector3df(0, ((i == 0) ? -45 : 45), 0), core::vector3df(1.f, rodSizeFactor, rodSizeFactor));
+		rodNodes[i] = smgr->addCubeSceneNode(size * 2 * sqrtf(2.f), this, -1, core::vector3df(0.f, size*(0.5f - rodSizeFactor) - 1, 0.f),
+			core::vector3df(0.f, ((i == 0) ? -45.f : 45.f), 0.f), core::vector3df(1.f, rodSizeFactor, rodSizeFactor));
 		rodNodes[i]->getMaterial(0).EmissiveColor = video::SColor(255, 40, 40, 40);
 	}
 
@@ -45,7 +45,7 @@ Quadrotor::Quadrotor(float size, float weight,
 	for (int i = 0; i < 4; ++i) {
 		rotor[i] = smgr->addMeshSceneNode(smgr->getMesh("../media/Propeller.obj"), this);
 		int x = i / 2, y = i % 2;
-		rotor[i]->setPosition(core::vector3df(size - 2 * x*size, size / 2 + size*0.05, size - 2 * y*size));
+		rotor[i]->setPosition(core::vector3df(size - 2 * x * size, size / 2 + size*0.05f, size - 2 * y*size));
 		rotor[i]->setRotation(core::vector3df(90, 0, 180));
 		rotor[i]->setScale(core::vector3df(size/1.7f, size/1.7f, size/1.7f));
 		rotor[i]->getMaterial(0).EmissiveColor = video::SColor(255, 120 + i * 30,  100 + i*30, 80 + i*30);
@@ -53,7 +53,7 @@ Quadrotor::Quadrotor(float size, float weight,
 		rotor[i]->getMaterial(0).ColorMaterial = video::ECM_DIFFUSE_AND_AMBIENT;
 	}
 
-	ISceneNode *cubeFront = smgr->addCubeSceneNode(size / 2, weightNode, -1, core::vector3df(size / 4 + 0.2, 0, 0));
+	ISceneNode *cubeFront = smgr->addCubeSceneNode(size / 2, weightNode, -1, core::vector3df(size / 4 + 0.2f, 0.f, 0.f));
 	cubeFront->getMaterial(0).AmbientColor = video::SColor(255, 240, 240, 240);
 	cubeFront->getMaterial(0).EmissiveColor = video::SColor(255, 150, 150, 150);
 	
@@ -75,7 +75,7 @@ void Quadrotor::setMotorSpeed(float speed[]) {
 	}
 }
 
-void Quadrotor::update(f64 elapsedTime) {
+void Quadrotor::update(f32 elapsedTime) {
 	// Update speed of Rotors
 	for (int i = 0; i < 4; ++i) {
 		motorSpeed[i] += (wantedMotorSpeed[i] - motorSpeed[i]) * (1 - std::exp(-elapsedTime / rotorTimeConstant));
