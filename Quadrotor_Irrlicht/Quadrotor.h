@@ -22,6 +22,7 @@ private:
 	float size;
 	const float weight, maxRPS, gravity;
 
+
 public:
 
 	Quadrotor(float size,  float weight,

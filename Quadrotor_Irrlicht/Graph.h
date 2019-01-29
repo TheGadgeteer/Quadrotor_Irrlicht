@@ -16,17 +16,18 @@ class Graph
 	int bufSize, numBuffers;
 	RingBuffer<core::vector2df>** buffers;
 	int nextIdx = 0, numElements = 0;
-	float maxVal;
+	float maxVal, minVal;
 	gui::IGUIFont* font;
 
 public:
 
-	Graph(const wchar_t* caption, core::rect<s32> pos, float maxVal, int numBuffers, int bufSize,
+	Graph(const wchar_t* caption, core::rect<s32> pos, float maxVal, float minVal, int numBuffers, int bufSize,
 		gui::IGUIFont* font)
 	{
 		this->caption = caption;
 		this->font = font;
 		this->maxVal = maxVal;
+		this->minVal = minVal;
 		this->pos = pos;
 		this->bufSize = bufSize;
 		this->numBuffers = numBuffers;
@@ -55,8 +56,14 @@ public:
 
 	virtual void render(video::IVideoDriver* driver)
 	{
+		const u32 fontLineOffset = 17;
 		driver->draw2DRectangle(colorRect, pos);
 		font->draw(caption, pos, colorFont, true);
+		wchar_t wStr[20];
+		swprintf(wStr, 100, L"%.2f", buffers[0]->get(buffers[0]->getNumElements() - 1).Y);
+		pos.UpperLeftCorner.Y += fontLineOffset;
+		font->draw(wStr, pos, colorFont, true);
+		pos.UpperLeftCorner.Y -= fontLineOffset;
 		video::SColor color;
 		for (int i = 0; i < numBuffers; ++i) {
 			color.set(255, 255 * (i == 0), 255 * (i == 1), 255 * (i == 2));
@@ -68,13 +75,13 @@ public:
 			for (int idx = numVals - 2; idx >= 0; --idx) {
 				core::vector2d<s32> startPos, endPos;
 				startPos.X = (s32)((buffers[i]->get(idx).X - startVal) / xSpan * width) + pos.UpperLeftCorner.X;
-				startPos.Y = pos.LowerRightCorner.Y - (s32)(buffers[i]->get(idx).Y / maxVal * height);
+				startPos.Y = pos.LowerRightCorner.Y - (s32)((buffers[i]->get(idx).Y - minVal) / (maxVal-minVal) * height);
 				endPos.X = (s32)((buffers[i]->get(idx+1).X -startVal) / xSpan * width) + pos.UpperLeftCorner.X;
-				endPos.Y = pos.LowerRightCorner.Y - (s32)(buffers[i]->get(idx+1).Y / maxVal * height);
+				endPos.Y = pos.LowerRightCorner.Y - (s32)((buffers[i]->get(idx+1).Y - minVal) / (maxVal - minVal) * height);
 				if (startPos.X < pos.UpperLeftCorner.X)
 					break;
-				//driver->draw2DRectangle(color, core::rect<s32>(startPos, endPos));
-				driver->draw2DLine(startPos, endPos, color);
+				if (pos.isPointInside(startPos) && pos.isPointInside(endPos))
+					driver->draw2DLine(startPos, endPos, color);
 			}
 		}
 	}
