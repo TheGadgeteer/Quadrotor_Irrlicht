@@ -12,6 +12,8 @@
 #include "FuzzyGraph.h"
 
 #include "FuzzyPDController.h"
+#include "QuadrotorController.h"
+#include "QuadrotorTrajectoryController.h"
 
 using namespace irr;
 
@@ -23,7 +25,6 @@ using namespace irr;
 
 
 void drawCoordinateSystem(Quadrotor* quadrotor, video::IVideoDriver *driver);
-void floatMod(float val, float mod);
 
 IrrlichtDevice* device = 0;
 bool UseHighLevelShaders = false;
@@ -47,7 +48,7 @@ int main(int argc, char **argv)
 	MyEventReceiver receiver;
 
 	// create device
-	device = createDevice(driverType, core::dimension2d<u32>(gScreenWidth, gScreenHeight), 
+	device = createDevice(driverType, core::dimension2d<u32>(gScreenWidth, gScreenHeight),
 		32, false, false, false, &receiver);
 
 	if (device == 0)
@@ -59,10 +60,10 @@ int main(int argc, char **argv)
 
 	io::path vsFileName; // filename for the vertex shader
 	io::path psFileName; // filename for the pixel shader
-	
+
 	setupShader(device, UseHighLevelShaders, driver, driverType,
 		psFileName, vsFileName);
-	
+
 	// add a nice skybox
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
 	//smgr->addSkyDomeSceneNode(driver->getTexture("../media/Sky_horiz_3.jpg"));
@@ -76,18 +77,22 @@ int main(int argc, char **argv)
 		driver->getTexture("../media/irrlicht2_bk.jpg"));
 
 	driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
-	
+
 	scene::ICameraSceneNode* cameras[2];
 	cameras[0] = smgr->addCameraSceneNode();
 	cameras[1] = smgr->addCameraSceneNodeFPS();
-	
+
 	receiver.setCameras(cameras, 2);
-	
-	
+
+
 	// add other objects
-	Quadrotor quadrotor(0.4 _METER, 0.7f, 12000/60.f, 9.81f _METER, smgr->getRootSceneNode(), smgr, 1001);
+	Quadrotor quadrotor(0.4 _METER, 0.7f, 12000 / 60.f, 9.81f _METER, smgr->getRootSceneNode(), smgr, 1001);
 	float speed[] = { 0.01f, 0.01f, 0.01f, 0.01f };
 	quadrotor.setMotorSpeed(speed);
+
+	QuadrotorController quadrotorControllerPD(PDController(1, .8f), PDController(1, .1f, .05f), PDController(1, .1f, .2f), &quadrotor);
+	QuadrotorTrajectoryController trajectoryController(&quadrotorControllerPD, &quadrotor);
+	receiver.setTrajectoryController(&trajectoryController);
 
 	PlatformNode* platform = new PlatformNode(20 _METER, 20 _METER,
 		driver->getTexture("../media/wall.bmp"), smgr->getRootSceneNode(), smgr, 1000);
@@ -118,24 +123,32 @@ int main(int argc, char **argv)
 
 	Graph* quadrotorGraph[4];
 	quadrotorGraph[0] = new Graph(L"Height", core::rect<s32>(0, 0.25*gScreenHeight, 0.25*gScreenWidth, 0.5*gScreenHeight),
-		20.f _METER, 0.f, 2, 30, font);
+		50.f _METER, 0.f, 2, 30, font);
 	quadrotorGraph[1] = new Graph(L"Roll", core::rect<s32>(0.75*gScreenWidth, 0.25*gScreenHeight, gScreenWidth, 0.5*gScreenHeight),
 		180.f, -180.f, 2, 30, font);
 	quadrotorGraph[2] = new Graph(L"Pitch", core::rect<s32>(0.75*gScreenWidth, 0.5*gScreenHeight, gScreenWidth, 0.75*gScreenHeight),
 		180.f, -180.f, 2, 30, font);
 	quadrotorGraph[3] = new Graph(L"Yaw", core::rect<s32>(0, 0.5*gScreenHeight, 0.25*gScreenWidth, 0.75*gScreenHeight),
 		180.f, -180.f, 2, 30, font);
-	
+
+
+
 	// Camera stuff
-	smgr->getActiveCamera()->setPosition(core::vector3df(1 _METER, 1 _METER, 1 _METER));
-	smgr->getActiveCamera()->setTarget(quadrotor.getAbsolutePosition());
-	bool isCameraHeightFixed = false, isPaused = false, drawCoordSys = false;
-	receiver.registerSwap('1', &isCameraHeightFixed);
+	smgr->setActiveCamera(cameras[0]);
+	cameras[0]->setFarValue(10000 _METER);
+	cameras[1]->setFarValue(10000 _METER);
+	cameras[0]->setParent(&quadrotor);
+	cameras[0]->setPosition(core::vector3df(150, 200, 150));
+	cameras[0]->setTarget(quadrotor.getAbsolutePosition());
+	cameras[1]->setPosition(core::vector3df(150, 200, 150));
+
+	bool isCameraTargetFixed = true, isPaused = false, drawCoordSys = false;
+	receiver.registerSwap('l', &isCameraTargetFixed);
 	receiver.registerSwap(' ', &isPaused);
 	receiver.registerSwap('c', &drawCoordSys);
 
 	bool showFuzzySets = false;
-	receiver.registerSwap('F', &showFuzzySets);
+	receiver.registerSwap('f', &showFuzzySets);
 	receiver.setQuadrotor(&quadrotor);
 
 
@@ -156,11 +169,12 @@ int main(int argc, char **argv)
 			u32 elapsedTimeMs = now - then;
 			f32 elapsedTime = elapsedTimeMs / 1000.f;
 
-
 			// World updates
 			if (!isPaused) {
 				timeWorld += elapsedTimeMs;
 				// Continuous updates
+			
+				trajectoryController.update(elapsedTime);
 				quadrotor.update(elapsedTime);
 
 				// Delayed updates
@@ -184,18 +198,16 @@ int main(int argc, char **argv)
 			
 			// Drawing stuff:
 			// Update camera
-			
 			if (smgr->getActiveCamera() == cameras[0]) {
-
-				cameras[0]->setPosition(quadrotor.getAbsolutePosition() + core::vector3df(1 _METER, 1 _METER, 1 _METER));
 				cameras[0]->setTarget(quadrotor.getAbsolutePosition());
-			} 
-			else if (isCameraHeightFixed) {
-				core::vector3df camPos = cameras[1]->getPosition();
+			}
+			else if (isCameraTargetFixed) {
+				cameras[1]->setTarget(quadrotor.getAbsolutePosition());
+				/*core::vector3df camPos = cameras[1]->getPosition();
 				camPos.Y = quadrotor.getAbsolutePosition().Y + 1.5f _METER;
 				cameras[1]->setPosition(camPos);
+				cameras[1]->updateAbsolutePosition();*/
 			}
-			
 			// Draw scene
 			driver->beginScene(true, true, video::SColor(255, 0, 0, 0));
 			smgr->drawAll();
@@ -217,6 +229,8 @@ int main(int argc, char **argv)
 			font->draw(rotStr, core::rect<s32>(gScreenWidth / 2 - 500, 20, gScreenWidth / 2 + 500, 50), video::SColor(255, 255, 255, 255), true, true);
 
 			driver->endScene();
+
+
 
 			int fps = driver->getFPS();
 			if (lastFPS != fps) {

@@ -150,12 +150,6 @@
     <ClCompile Include="TrapezoidalFuzzySet.h" />
     <ClCompile Include="Graph.h" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="mainExample.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Quadrotor.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +161,7 @@
     <ClInclude Include="PlatformNode.h" />
     <ClInclude Include="Quadrotor.h" />
     <ClInclude Include="QuadrotorController.h" />
+    <ClInclude Include="QuadrotorTrajectoryController.h" />
     <ClInclude Include="RingBuffer.h" />
     <ClInclude Include="ShaderSetup.h" />
   </ItemGroup>

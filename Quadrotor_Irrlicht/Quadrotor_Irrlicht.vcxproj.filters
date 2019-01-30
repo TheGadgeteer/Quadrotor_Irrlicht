@@ -13,22 +13,25 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Graph">
+      <UniqueIdentifier>{662623f2-6f39-42fd-9eea-6d5044a8cb7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Controller">
+      <UniqueIdentifier>{b74f6b0b-4584-409a-aa73-8b1cd7e2bf66}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mainExample.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Quadrotor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Graph.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Graph</Filter>
     </ClCompile>
     <ClCompile Include="TrapezoidalFuzzySet.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Controller</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -41,26 +44,29 @@
     <ClInclude Include="PlatformNode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PIDController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="QuadrotorController.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Quadrotor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RingBuffer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="FuzzyGraph.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="PIDController.h">
+      <Filter>Header Files\Controller</Filter>
     </ClInclude>
     <ClInclude Include="PDController.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadrotorController.h">
+      <Filter>Header Files\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="RingBuffer.h">
+      <Filter>Header Files\Graph</Filter>
     </ClInclude>
     <ClInclude Include="FuzzyPDController.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadrotorTrajectoryController.h">
+      <Filter>Header Files\Controller</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,6 +1,7 @@
 #pragma once
 #include <irrlicht.h>
 #include "Quadrotor.h"
+#include "QuadrotorTrajectoryController.h"
 #include <map>
 
 using namespace irr;
@@ -13,10 +14,10 @@ private:
 	scene::ICameraSceneNode** cameras = NULL;
 	int numCameras = 0;
 	Quadrotor* quadrotor = NULL;
+	QuadrotorTrajectoryController* trajectoryController = NULL;
 
 	scene::ISceneManager* smgr = NULL;
 	std::map<wchar_t, bool*> keyMap;
-
 public:
 	// We'll create a struct to record info on the mouse state
 	struct SMouseState
@@ -25,14 +26,6 @@ public:
 		bool LeftButtonDown;
 		SMouseState() : LeftButtonDown(false) { }
 	} MouseState;
-
-	void setCameras(
-		scene::ICameraSceneNode** cameras,
-		int numCameras)
-	{
-		this->cameras = cameras;
-		this->numCameras = numCameras;
-	}
 
 	// This is the one method that we have to implement
 	virtual bool OnEvent(const SEvent& event)
@@ -77,6 +70,7 @@ public:
 				}
 				catch (std::out_of_range) {};
 			}
+
 			switch (event.KeyInput.Key) {
 			case KEY_END:
 				if (event.KeyInput.PressedDown) {
@@ -95,13 +89,22 @@ public:
 							break;
 						}
 					}
-					if (idx >= 0)
+					if (idx >= 0) {
 						setActiveCamera(cameras[(idx + 1) % numCameras]);
+						if (idx == 0)
+							device->getCursorControl()->setVisible(false);
+						else {
+							device->getCursorControl()->setVisible(true);
+						}
+
+					}
 				}
 				break;
 			case KEY_KEY_R:
 				if (quadrotor != NULL)
 					quadrotor->reset();
+				if (trajectoryController != NULL)
+					trajectoryController->reset();
 				break;
 			case KEY_KEY_0:
 				if (quadrotor != NULL) {
@@ -139,7 +142,27 @@ public:
 					quadrotor->setMotorSpeed(desiredSpeed);
 				}
 				break;
-
+			// Trajectory Controller keys
+			case KEY_KEY_S:
+				if (trajectoryController != NULL) {
+					trajectoryController->setTrajectory(QT_NONE);
+				}
+				break;
+			case KEY_KEY_1:
+				if (trajectoryController != NULL) {
+					trajectoryController->setTrajectory(QT_STABLE_LOW);
+				}
+				break;
+			case KEY_KEY_2:
+				if (trajectoryController != NULL) {
+					trajectoryController->setTrajectory(QT_STABLE_MEDIUM);
+				}
+				break;
+			case KEY_KEY_3:
+				if (trajectoryController != NULL) {
+					trajectoryController->setTrajectory(QT_STABLE_HIGH);
+				}
+				break;
 			}
 		}
 
@@ -147,23 +170,32 @@ public:
 
 		return false;
 	}
-
+	
+	void setCameras(scene::ICameraSceneNode** cameras, int numCameras)
+	{
+		this->cameras = cameras;
+		this->numCameras = numCameras;
+	}
 	void setActiveCamera(scene::ICameraSceneNode* newActive)
 	{
 		if (0 == smgr)
 			return;
-
 		scene::ICameraSceneNode * active = smgr->getActiveCamera();
 		active->setInputReceiverEnabled(false);
-
 		newActive->setInputReceiverEnabled(true);
-		newActive->setPosition(active->getPosition());
-		newActive->setRotation(active->getRotation());
+		//newActive->setPosition(active->getPosition());
+		//newActive->setRotation(active->getRotation());
 		smgr->setActiveCamera(newActive);
 	}
+
 	void setQuadrotor(Quadrotor* quadrotor) {
 		this->quadrotor = quadrotor;
 	}
+
+	void setTrajectoryController(QuadrotorTrajectoryController* controller) {
+		this->trajectoryController = controller;
+	}
+
 
 	const SMouseState & GetMouseState(void) const
 	{

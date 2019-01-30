@@ -158,6 +158,7 @@ void Quadrotor::update(f32 elapsedTime) {
 		pos.Y = 0;
 		speed.Y = 0;
 		speed *= 0.2f;
+		this->angularSpeed = core::vector3df(0, 0, 0);
 		this->setPosition(pos);
 		this->setRotation(core::vector3df(0, 0, 0));
 	}
