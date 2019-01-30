@@ -65,13 +65,15 @@ public:
 		font->draw(wStr, pos, colorFont, true);
 		pos.UpperLeftCorner.Y -= fontLineOffset;
 		video::SColor color;
+		if (buffers[0]->getNumElements() < 2)
+			return;
+		float startVal = buffers[0]->get(0).X;
+		float xSpan = buffers[0]->get(buffers[0]->getNumElements() - 1).X - startVal;
 		for (int i = 0; i < numBuffers; ++i) {
 			color.set(255, 255 * (i == 0), 255 * (i == 1), 255 * (i == 2));
 			int numVals = buffers[i]->getNumElements();
 			if (numVals < 2)
 				continue;
-			float startVal = buffers[i]->get(0).X;
-			float xSpan = buffers[i]->get(numVals - 1).X - startVal;
 			for (int idx = numVals - 2; idx >= 0; --idx) {
 				core::vector2d<s32> startPos, endPos;
 				startPos.X = (s32)((buffers[i]->get(idx).X - startVal) / xSpan * width) + pos.UpperLeftCorner.X;

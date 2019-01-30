@@ -122,14 +122,15 @@ int main(int argc, char **argv)
 	}
 
 	Graph* quadrotorGraph[4];
-	quadrotorGraph[0] = new Graph(L"Height", core::rect<s32>(0, 0.25*gScreenHeight, 0.25*gScreenWidth, 0.5*gScreenHeight),
+	quadrotorGraph[0] = new Graph(L"Height", core::rect<s32>(0, 0.252*gScreenHeight, 0.25*gScreenWidth, 0.5*gScreenHeight),
 		50.f _METER, 0.f, 2, 30, font);
-	quadrotorGraph[1] = new Graph(L"Roll", core::rect<s32>(0.75*gScreenWidth, 0.25*gScreenHeight, gScreenWidth, 0.5*gScreenHeight),
+	quadrotorGraph[1] = new Graph(L"Roll", core::rect<s32>(0.75*gScreenWidth, 0.252*gScreenHeight, gScreenWidth, 0.5*gScreenHeight),
 		180.f, -180.f, 2, 30, font);
-	quadrotorGraph[2] = new Graph(L"Pitch", core::rect<s32>(0.75*gScreenWidth, 0.5*gScreenHeight, gScreenWidth, 0.75*gScreenHeight),
+	quadrotorGraph[2] = new Graph(L"Yaw", core::rect<s32>(0, 0.502*gScreenHeight, 0.25*gScreenWidth, 0.748*gScreenHeight),
 		180.f, -180.f, 2, 30, font);
-	quadrotorGraph[3] = new Graph(L"Yaw", core::rect<s32>(0, 0.5*gScreenHeight, 0.25*gScreenWidth, 0.75*gScreenHeight),
+	quadrotorGraph[3] = new Graph(L"Pitch", core::rect<s32>(0.75*gScreenWidth, 0.502*gScreenHeight, gScreenWidth, 0.748*gScreenHeight),
 		180.f, -180.f, 2, 30, font);
+
 
 
 
@@ -184,10 +185,22 @@ int main(int argc, char **argv)
 						motorGraphLin[i]->addVal(0, core::vector2df((f32)timeWorld, quadrotor.getMotorSpeed(i)));
 						motorGraphLin[i]->addVal(1, core::vector2df((f32)timeWorld, quadrotor.getWantedMotorSpeed(i)));
 					}
+
+					float quadrotorRot[3];
+					quadrotor.getRotation().getAs3Values(quadrotorRot);
+					const float *const trajectoryParams = trajectoryController.getParams();
+
 					quadrotorGraph[0]->addVal(0, core::vector2df((f32)timeWorld, quadrotor.getAbsolutePosition().Y));
-					quadrotorGraph[1]->addVal(0, core::vector2df((f32)timeWorld, quadrotor.getRotation().X));
-					quadrotorGraph[2]->addVal(0, core::vector2df((f32)timeWorld, quadrotor.getRotation().Z));
-					quadrotorGraph[3]->addVal(0, core::vector2df((f32)timeWorld, quadrotor.getRotation().Y));
+					if (trajectoryController.getTrajectory() != QT_NONE)
+						quadrotorGraph[0]->addVal(1, core::vector2df((f32)timeWorld, trajectoryParams[0]));
+					for (int i = 0; i < 3; ++i) {
+						quadrotorRot[i] -= 360 * (int)(quadrotorRot[i] / 360);
+						if (fabs(quadrotorRot[i]) > 180)
+							quadrotorRot[i] = (quadrotorRot[i] > 0 ? -360 : 360) + quadrotorRot[i];
+						quadrotorGraph[i+1]->addVal(0, core::vector2df((f32)timeWorld, quadrotorRot[i]));
+						if (trajectoryController.getTrajectory() != QT_NONE)
+							quadrotorGraph[i+1]->addVal(1, core::vector2df((f32)timeWorld, trajectoryParams[i+1]));
+					}
 
 					delayedPos = quadrotor.getAbsolutePosition();
 					delayedRot = quadrotor.getRotation();

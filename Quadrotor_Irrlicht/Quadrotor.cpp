@@ -137,18 +137,6 @@ void Quadrotor::update(f32 elapsedTime) {
 	//rot += core::vector3df(0, 90, 0) * elapsedTime;
 	rot += angularSpeed * elapsedTime;
 
-	rot.X = rot.X - 360 * (int)(rot.X / 360);
-	if (fabs(rot.X) > 180)
-		rot.X = (rot.X < 0 ? -360 : 360) - rot.X;
-
-	rot.Y = rot.Y - 360 * (int)(rot.Y / 360);
-	if (fabs(rot.Y) > 180)
-		rot.Y = (rot.Y > 0 ? -360 : 360) + rot.Y;
-
-	rot.Z = rot.Z - 360 * (int)(rot.Z / 360);
-	if (fabs(rot.Z) > 180)
-		rot.Z = (rot.Z < 0 ? -360 : 360) - rot.Z;
-
 	this->setRotation(rot);
 	
 
